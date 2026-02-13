@@ -1,0 +1,17 @@
+{
+    "agents": [
+        "claude_code"
+    ],
+    "guidelines": true,
+    "herd_mcp": false,
+    "mcp": true,
+    "packages": [
+        "spatie/boost-spatie-guidelines"
+    ],
+    "sail": false,
+    "skills": [
+        "livewire-development",
+        "pest-testing",
+        "tailwindcss-development"
+    ]
+}
