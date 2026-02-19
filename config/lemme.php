@@ -114,6 +114,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Markdown Responses (Markdown for Agents)
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, clients that send an `Accept: text/markdown` header will
+    | receive the raw Markdown source instead of the rendered HTML page. This
+    | follows the "Markdown for Agents" convention popularised by Cloudflare,
+    | making your documentation directly consumable by AI agents and tools.
+    |
+    | Response headers include `Content-Type: text/markdown` and an
+    | `X-Markdown-Tokens` estimate so callers can budget context windows.
+    |
+    */
+    'markdown' => [
+        'enabled' => env('LEMME_MARKDOWN_ENABLED', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | API Endpoints
     |--------------------------------------------------------------------------
     |

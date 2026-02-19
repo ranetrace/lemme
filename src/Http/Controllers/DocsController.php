@@ -35,6 +35,10 @@ class DocsController extends Controller
             abort(404, 'Documentation page not found');
         }
 
+        if ($this->wantsMarkdown($request)) {
+            return $this->markdownResponse($page);
+        }
+
         $navigation = Lemme::getNavigation();
         $html = Lemme::getPageHtml($slug);
 
@@ -76,5 +80,31 @@ class DocsController extends Controller
         }
 
         return response()->json(['page' => $page]);
+    }
+
+    /**
+     * Determine whether the request prefers a Markdown response.
+     */
+    protected function wantsMarkdown(Request $request): bool
+    {
+        if (! config('lemme.markdown.enabled', true)) {
+            return false;
+        }
+
+        return str_contains((string) $request->header('Accept', ''), 'text/markdown');
+    }
+
+    /**
+     * Build a text/markdown response for the given page.
+     */
+    protected function markdownResponse(\Sorane\Lemme\Data\PageData $page): Response
+    {
+        $markdown = $page->raw_content;
+        $estimatedTokens = (int) ceil(mb_strlen($markdown) / 4);
+
+        return new Response($markdown, 200, [
+            'Content-Type' => 'text/markdown; charset=utf-8',
+            'X-Markdown-Tokens' => $estimatedTokens,
+        ]);
     }
 }
