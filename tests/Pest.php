@@ -1,6 +1,6 @@
 <?php
 
-use Sorane\Lemme\Tests\TestCase;
+use Ranetrace\Lemme\Tests\TestCase;
 
 /*
 |--------------------------------------------------------------------------

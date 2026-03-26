@@ -1,9 +1,9 @@
 <?php
 
-namespace Sorane\Lemme\Support;
+namespace Ranetrace\Lemme\Support;
 
 use Illuminate\Support\Facades\Cache;
-use Sorane\Lemme\Data\PageData;
+use Ranetrace\Lemme\Data\PageData;
 use Spatie\LaravelMarkdown\MarkdownRenderer;
 
 class ContentRenderer

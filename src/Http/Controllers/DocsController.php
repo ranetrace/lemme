@@ -1,13 +1,13 @@
 <?php
 
-namespace Sorane\Lemme\Http\Controllers;
+namespace Ranetrace\Lemme\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Sorane\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Facades\Lemme;
 
 class DocsController extends Controller
 {
@@ -97,7 +97,7 @@ class DocsController extends Controller
     /**
      * Build a text/markdown response for the given page.
      */
-    protected function markdownResponse(\Sorane\Lemme\Data\PageData $page): Response
+    protected function markdownResponse(\Ranetrace\Lemme\Data\PageData $page): Response
     {
         $markdown = $page->raw_content;
         $estimatedTokens = (int) ceil(mb_strlen($markdown) / 4);

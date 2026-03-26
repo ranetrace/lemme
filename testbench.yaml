@@ -3,5 +3,5 @@ env:
   CACHE_DRIVER: array
 
 providers:
-  - Sorane\Lemme\LemmeServiceProvider
+  - Ranetrace\Lemme\LemmeServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider

@@ -1,6 +1,6 @@
 <?php
 
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 beforeEach(function () {
     $this->docs = DocsFactory::make();

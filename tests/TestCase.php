@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Tests;
+namespace Ranetrace\Lemme\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
@@ -29,7 +29,7 @@ class TestCase extends OrchestraTestCase
     {
         return [
             \Livewire\LivewireServiceProvider::class,
-            \Sorane\Lemme\LemmeServiceProvider::class,
+            \Ranetrace\Lemme\LemmeServiceProvider::class,
         ];
     }
 }

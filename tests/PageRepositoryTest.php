@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Cache;
-use Sorane\Lemme\Support\PageRepository;
-use Sorane\Lemme\Support\SearchIndexBuilder;
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Support\PageRepository;
+use Ranetrace\Lemme\Support\SearchIndexBuilder;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 beforeEach(function () {
     $this->docs = DocsFactory::make();

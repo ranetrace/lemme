@@ -1,14 +1,14 @@
 <?php
 
-namespace Sorane\Lemme\Support;
+namespace Ranetrace\Lemme\Support;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Sorane\Lemme\Data\PageData;
-use Sorane\Lemme\Events\MarkdownParseFailed;
+use Ranetrace\Lemme\Data\PageData;
+use Ranetrace\Lemme\Events\MarkdownParseFailed;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 class PageRepository

@@ -1,11 +1,11 @@
 <?php
 
-namespace Sorane\Lemme\Livewire;
+namespace Ranetrace\Lemme\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Sorane\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Facades\Lemme;
 
 class SearchComponent extends Component
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Sorane\Lemme\Commands;
+namespace Ranetrace\Lemme\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Sorane\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Facades\Lemme;
 
 class LemmeInstallCommand extends Command
 {
@@ -47,8 +47,8 @@ class LemmeInstallCommand extends Command
 
         if ($subdomain && ! $routePrefix) {
             // Using subdomain routing with consistent domain calculation
-            $protocol = \Sorane\Lemme\Lemme::baseScheme();
-            $host = \Sorane\Lemme\Lemme::baseHost();
+            $protocol = \Ranetrace\Lemme\Lemme::baseScheme();
+            $host = \Ranetrace\Lemme\Lemme::baseHost();
             $lemmeDomain = $protocol.'://'.$subdomain.'.'.$host;
         } elseif ($routePrefix) {
             // Using route prefix (default)

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Events;
+namespace Ranetrace\Lemme\Events;
 
 class MarkdownParseFailed
 {

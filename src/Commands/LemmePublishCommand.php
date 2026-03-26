@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Commands;
+namespace Ranetrace\Lemme\Commands;
 
 use Illuminate\Console\Command;
 

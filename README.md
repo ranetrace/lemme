@@ -566,7 +566,7 @@ LEMME_SEARCH_MAX_CONTENT_LENGTH=8000
 You can also interact with Lemme programmatically:
 
 ```php
-use Sorane\Lemme\Facades\Lemme;
+use Ranetrace\\Lemme\Facades\Lemme;
 
 // Get all documentation pages
 $pages = Lemme::getPages();

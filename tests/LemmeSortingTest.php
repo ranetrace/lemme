@@ -1,7 +1,7 @@
 <?php
 
-use Sorane\Lemme\Facades\Lemme;
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 it('sorts pages by title descending correctly', function () {
     $docs = DocsFactory::make();

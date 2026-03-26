@@ -9,20 +9,20 @@
         "website",
         "generator",
         "lemme",
-        "sorane"
+        "ranetrace"
     ],
     "homepage": "https://github.com/ranetrace/lemme",
     "license": "MIT",
     "authors": [
         {
             "name": "Rutger Broerze",
-            "email": "contact@sorane.io",
+            "email": "contact@ranetrace.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.4",
-        "illuminate/support": "^10.0||^11.0||^12.0",
+        "illuminate/support": "^11.0||^12.0||^13.0",
         "livewire/livewire": "^4.0",
         "spatie/laravel-markdown": "^2.7",
         "spatie/yaml-front-matter": "^2.0",
@@ -45,13 +45,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Sorane\\Lemme\\": "src/",
-            "Sorane\\Lemme\\Database\\Factories\\": "database/factories/"
+            "Ranetrace\\Lemme\\": "src/",
+            "Ranetrace\\Lemme\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Sorane\\Lemme\\Tests\\": "tests/",
+            "Ranetrace\\Lemme\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -76,10 +76,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Sorane\\Lemme\\LemmeServiceProvider"
+                "Ranetrace\\Lemme\\LemmeServiceProvider"
             ],
             "aliases": {
-                "Lemme": "Sorane\\Lemme\\Facades\\Lemme"
+                "Lemme": "Ranetrace\\Lemme\\Facades\\Lemme"
             }
         }
     },

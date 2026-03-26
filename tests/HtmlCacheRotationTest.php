@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Cache;
-use Sorane\Lemme\Facades\Lemme;
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 it('rotates html cache key when file modified', function () {
     $docs = DocsFactory::make();

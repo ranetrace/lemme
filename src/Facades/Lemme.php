@@ -1,16 +1,16 @@
 <?php
 
-namespace Sorane\Lemme\Facades;
+namespace Ranetrace\Lemme\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Sorane\Lemme\Lemme
+ * @see \Ranetrace\Lemme\Lemme
  */
 class Lemme extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Sorane\Lemme\Lemme::class;
+        return \Ranetrace\Lemme\Lemme::class;
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sorane\Lemme\Commands;
+namespace Ranetrace\Lemme\Commands;
 
 use Illuminate\Console\Command;
-use Sorane\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Facades\Lemme;
 
 class LemmeClearCommand extends Command
 {

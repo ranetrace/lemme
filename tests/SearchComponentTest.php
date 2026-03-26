@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Livewire;
-use Sorane\Lemme\Livewire\SearchComponent;
+use Ranetrace\Lemme\Livewire\SearchComponent;
 
 beforeEach(function () {
     // Encryption key required by Livewire components

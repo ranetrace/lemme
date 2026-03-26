@@ -1,9 +1,9 @@
 <?php
 
-namespace Sorane\Lemme\Support;
+namespace Ranetrace\Lemme\Support;
 
 use Illuminate\Support\Collection;
-use Sorane\Lemme\Data\PageData;
+use Ranetrace\Lemme\Data\PageData;
 
 /**
  * Builds hierarchical navigation structure from a pages collection.

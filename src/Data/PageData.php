@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Data;
+namespace Ranetrace\Lemme\Data;
 
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;

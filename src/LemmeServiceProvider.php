@@ -1,19 +1,19 @@
 <?php
 
-namespace Sorane\Lemme;
+namespace Ranetrace\Lemme;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Sorane\Lemme\Commands\LemmeClearCommand;
-use Sorane\Lemme\Commands\LemmeInstallCommand;
-use Sorane\Lemme\Commands\LemmePublishCommand;
-use Sorane\Lemme\Commands\LemmeReindexCommand;
-use Sorane\Lemme\Support\ContentRenderer;
-use Sorane\Lemme\Support\NavigationBuilder;
-use Sorane\Lemme\Support\PageRepository;
-use Sorane\Lemme\Support\SearchIndexBuilder;
+use Ranetrace\Lemme\Commands\LemmeClearCommand;
+use Ranetrace\Lemme\Commands\LemmeInstallCommand;
+use Ranetrace\Lemme\Commands\LemmePublishCommand;
+use Ranetrace\Lemme\Commands\LemmeReindexCommand;
+use Ranetrace\Lemme\Support\ContentRenderer;
+use Ranetrace\Lemme\Support\NavigationBuilder;
+use Ranetrace\Lemme\Support\PageRepository;
+use Ranetrace\Lemme\Support\SearchIndexBuilder;
 
 class LemmeServiceProvider extends ServiceProvider
 {
@@ -31,7 +31,7 @@ class LemmeServiceProvider extends ServiceProvider
         $this->app->singleton(SearchIndexBuilder::class, fn () => new SearchIndexBuilder);
 
         // Bind the Lemme facade/root object
-        $this->app->singleton(\Sorane\Lemme\Lemme::class, function ($app) {
+        $this->app->singleton(\Ranetrace\Lemme\Lemme::class, function ($app) {
             return new Lemme(
                 $app->make(PageRepository::class),
                 $app->make(NavigationBuilder::class),
@@ -41,7 +41,7 @@ class LemmeServiceProvider extends ServiceProvider
         });
 
         // Backwards compatible alias so resolve('lemme') still works
-        $this->app->alias(\Sorane\Lemme\Lemme::class, 'lemme');
+        $this->app->alias(\Ranetrace\Lemme\Lemme::class, 'lemme');
     }
 
     public function boot(): void
@@ -60,11 +60,11 @@ class LemmeServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'lemme');
 
         // Register Blade Components namespace
-        Blade::componentNamespace('Sorane\\Lemme\\Views\\Components', 'lemme');
+        Blade::componentNamespace('Ranetrace\\Lemme\\Views\\Components', 'lemme');
 
         // Register Livewire component
         if (class_exists(Livewire::class)) {
-            Livewire::component('lemme.search-component', \Sorane\Lemme\Livewire\SearchComponent::class);
+            Livewire::component('lemme.search-component', \Ranetrace\Lemme\Livewire\SearchComponent::class);
         }
 
         // Console-specific booting

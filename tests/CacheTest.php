@@ -1,7 +1,7 @@
 <?php
 
-use Sorane\Lemme\Facades\Lemme;
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 it('respects cache for pages until cleared', function () {
     $docs = DocsFactory::make();

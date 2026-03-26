@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Views\Components;
+namespace Ranetrace\Lemme\Views\Components;
 
 use Illuminate\View\Component;
 use Illuminate\View\View;

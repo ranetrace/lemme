@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Collection;
-use Sorane\Lemme\Support\NavigationBuilder;
+use Ranetrace\Lemme\Support\NavigationBuilder;
 
 // Keeping reflection-based tests for now; integration navigation test added separately.
 

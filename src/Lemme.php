@@ -1,13 +1,13 @@
 <?php
 
-namespace Sorane\Lemme;
+namespace Ranetrace\Lemme;
 
 use Illuminate\Support\Collection;
-use Sorane\Lemme\Data\PageData;
-use Sorane\Lemme\Support\ContentRenderer;
-use Sorane\Lemme\Support\NavigationBuilder;
-use Sorane\Lemme\Support\PageRepository;
-use Sorane\Lemme\Support\SearchIndexBuilder;
+use Ranetrace\Lemme\Data\PageData;
+use Ranetrace\Lemme\Support\ContentRenderer;
+use Ranetrace\Lemme\Support\NavigationBuilder;
+use Ranetrace\Lemme\Support\PageRepository;
+use Ranetrace\Lemme\Support\SearchIndexBuilder;
 
 class Lemme
 {

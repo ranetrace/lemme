@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Cache;
-use Sorane\Lemme\Tests\Support\DocsFactory;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 it('reindexes and warms cache via artisan command', function () {
     $docs = DocsFactory::make();

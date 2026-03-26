@@ -1,6 +1,6 @@
 <?php
 
-namespace Sorane\Lemme\Tests\Support;
+namespace Ranetrace\Lemme\Tests\Support;
 
 use Illuminate\Support\Facades\File;
 
