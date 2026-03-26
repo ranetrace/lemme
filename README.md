@@ -9,7 +9,7 @@
 
 Lemme is a Laravel package that facilitates the creation of beautiful documentation websites from Markdown files. It provides a simple way to turn your project's documentation into a fully-featured website with a modern, responsive design. All from within your Laravel application.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/usesorane/lemme.svg?style=flat-square)](https://packagist.org/packages/usesorane/lemme)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ranetrace/lemme.svg?style=flat-square)](https://packagist.org/packages/ranetrace/lemme)
 
 ## Table of Contents
 
@@ -71,7 +71,7 @@ It's really that simple. And totally free.
 Install the package via Composer:
 
 ```bash
-composer require usesorane/lemme
+composer require ranetrace/lemme
 ```
 
 Install the documentation system:
