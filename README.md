@@ -267,6 +267,7 @@ return [
     'logo' => [
         'type' => env('LEMME_LOGO_TYPE', 'view'),
         'view' => env('LEMME_LOGO_VIEW', 'lemme::partials.logo'),
+        'component' => env('LEMME_LOGO_COMPONENT', null),
         'image' => env('LEMME_LOGO_IMAGE', null),
         'text' => env('LEMME_LOGO_TEXT', null),
         'alt' => env('LEMME_LOGO_ALT', 'Logo'),
@@ -278,22 +279,23 @@ return [
 
 ### Logo Customization
 
-You can fully customize the logo displayed in the header. Choose one of three rendering modes via the config file or environment variables.
+You can fully customize the logo displayed in the header. Choose one of four rendering modes via the config file or environment variables.
 
-> Recommended: Use the `view` (Blade partial) option. It's the most flexible and future‑proof approach because you can:
+> Recommended: Use the `component` (Blade component) or `view` (Blade partial) option. These are the most flexible and future‑proof approaches because you can:
 > - Swap light/dark variants conditionally
 > - Add accessible markup (ARIA labels, screen-reader text)
 > - Inject dynamic data (app version, beta badge, etc.)
 > - Reuse shared components / Tailwind classes
 > - Evolve the logo without changing `.env` variables
 >
-> The `image` and `text` modes are intentionally lightweight shortcuts, but most projects should create and use a Blade partial.
+> The `image` and `text` modes are intentionally lightweight shortcuts, but most projects should create and use a Blade component or partial.
 
-| Type  | Env Setting                   | Required Extra Vars                 | Description                            |
-|-------|-------------------------------|--------------------------------------|----------------------------------------|
-| view  | `LEMME_LOGO_TYPE=view`        | `LEMME_LOGO_VIEW` (optional)         | Renders a Blade view (default partial) |
-| image | `LEMME_LOGO_TYPE=image`       | `LEMME_LOGO_IMAGE` (path or URL)     | Outputs an `<img>` tag                 |
-| text  | `LEMME_LOGO_TYPE=text`        | `LEMME_LOGO_TEXT` (string)           | Simple text logo                       |
+| Type      | Env Setting                      | Required Extra Vars                    | Description                              |
+|-----------|----------------------------------|----------------------------------------|------------------------------------------|
+| component | `LEMME_LOGO_TYPE=component`      | `LEMME_LOGO_COMPONENT` (component name)| Renders a Blade component                |
+| view      | `LEMME_LOGO_TYPE=view`           | `LEMME_LOGO_VIEW` (optional)           | Renders a Blade view (default partial)  |
+| image     | `LEMME_LOGO_TYPE=image`          | `LEMME_LOGO_IMAGE` (path or URL)       | Outputs an `<img>` tag                   |
+| text      | `LEMME_LOGO_TYPE=text`           | `LEMME_LOGO_TEXT` (string)             | Simple text logo                         |
 
 Common optional variables:
 
@@ -303,6 +305,12 @@ LEMME_LOGO_CLASSES="h-6 w-auto"        # Extra classes applied to root element
 ```
 
 Examples:
+
+Blade component logo:
+```
+LEMME_LOGO_TYPE=component
+LEMME_LOGO_COMPONENT=branding.logo
+```
 
 Image logo:
 ```

@@ -1,0 +1,1 @@
+<div class="test-logo-component">Test Logo Component</div>

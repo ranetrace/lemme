@@ -155,9 +155,10 @@ return [
     |
     | Configure how the logo in the documentation layout is rendered.
     | Supported types:
-    | - view  : renders a Blade view (default existing partial)
-    | - image : renders an <img> tag (provide image path relative to public/ or full URL)
-    | - text  : renders plain text inside a <span>
+    | - view      : renders a Blade view (default existing partial)
+    | - component : renders a Blade component
+    | - image     : renders an <img> tag (provide image path relative to public/ or full URL)
+    | - text      : renders plain text inside a <span>
     |
     | You can override via env vars, e.g.:
     |   LEMME_LOGO_TYPE=image
@@ -168,6 +169,7 @@ return [
     'logo' => [
         'type' => env('LEMME_LOGO_TYPE', 'view'),
         'view' => env('LEMME_LOGO_VIEW', 'lemme::partials.logo'),
+        'component' => env('LEMME_LOGO_COMPONENT', null),
         'image' => env('LEMME_LOGO_IMAGE', null),
         'text' => env('LEMME_LOGO_TEXT', null),
         'alt' => env('LEMME_LOGO_ALT', 'Logo'),
