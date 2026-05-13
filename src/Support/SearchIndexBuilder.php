@@ -72,7 +72,11 @@ class SearchIndexBuilder
     protected function getSearchableContent(string $content): string
     {
         $maxLength = (int) config('lemme.search.max_content_length', 0);
-        $html = app(MarkdownRenderer::class)->toHtml($content);
+        // Skip Shiki syntax highlighting — search only needs plain text and Shiki is the
+        // expensive part of the render pipeline.
+        $html = app(MarkdownRenderer::class)
+            ->disableHighlighting()
+            ->toHtml($content);
         $text = trim((string) preg_replace('/\s+/', ' ', strip_tags($html)));
         if ($maxLength > 0 && strlen($text) > $maxLength) {
             return substr($text, 0, $maxLength).'...';
