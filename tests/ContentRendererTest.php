@@ -33,7 +33,7 @@ it('adds numeric suffix for duplicate heading text', function () {
     $renderer = new ContentRenderer;
     $html = $renderer->render($page);
     expect($html)->toContain('id="repeat"')
-        ->and($html)->toContain('id="repeat-2"');
+        ->and($html)->toContain('id="repeat-1"');
 });
 
 it('caches html and rotates keys when page modified', function () {

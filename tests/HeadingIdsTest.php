@@ -10,5 +10,5 @@ it('generates unique heading ids for duplicate headings', function () {
 
     $docs->file('dup.md', "# Title\n\n## Repeat\nText\n\n## Repeat\nMore\n");
     $html = Lemme::getPageHtml('dup');
-    expect($html)->toContain('id="repeat"')->and($html)->toContain('id="repeat-2"');
+    expect($html)->toContain('id="repeat"')->and($html)->toContain('id="repeat-1"');
 });

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use League\CommonMark\Normalizer\SlugNormalizer;
+use League\CommonMark\Normalizer\UniqueSlugNormalizer;
 use Ranetrace\Lemme\Data\PageData;
 use Ranetrace\Lemme\Events\MarkdownParseFailed;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
@@ -182,19 +184,19 @@ class PageRepository
 
     protected function extractHeadings(string $markdownContent): array
     {
+        $slugger = new UniqueSlugNormalizer(new SlugNormalizer);
         $headings = [];
         $lines = explode("\n", $markdownContent);
         foreach ($lines as $line) {
             if (preg_match('/^(#{1,6})\s+(.+)$/', trim($line), $matches)) {
                 $level = strlen($matches[1]);
                 $text = trim($matches[2]);
-                $id = $this->generateHeadingId($text);
-                $class = $this->getHeadingClass($level);
+                $plainText = $this->stripInlineMarkdown($text);
                 $headings[] = [
-                    'id' => $id,
+                    'id' => $slugger->normalize($plainText),
                     'text' => $text,
                     'level' => $level,
-                    'class' => $class,
+                    'class' => $this->getHeadingClass($level),
                 ];
             }
         }
@@ -202,15 +204,13 @@ class PageRepository
         return $headings;
     }
 
-    protected function generateHeadingId(string $text): string
+    protected function stripInlineMarkdown(string $text): string
     {
-        $text = preg_replace('/[*_`]/', '', $text);
-        $id = strtolower($text);
-        $id = preg_replace('/[^a-z0-9\s-]/', '', $id);
-        $id = preg_replace('/[\s-]+/', '-', $id);
-        $id = trim($id, '-');
+        // Match the text CommonMark would see for slug generation: drop emphasis/code
+        // markers and unwrap [link](url) syntax so TOC ids align with rendered heading ids.
+        $text = preg_replace('/\[([^\]]+)\]\([^)]*\)/', '$1', $text);
 
-        return $id ?: 'heading';
+        return preg_replace('/[*_`]/', '', $text);
     }
 
     protected function getHeadingClass(int $level): string
