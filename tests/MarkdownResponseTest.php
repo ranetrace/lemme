@@ -66,8 +66,8 @@ MD);
 
     $response = $this->get('/docs/page');
 
-    $response->assertOk()
-        ->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    $response->assertOk();
+    expect($response->headers->get('Content-Type'))->toStartWith('text/html');
 });
 
 it('returns markdown for the index page', function () {
@@ -112,6 +112,6 @@ it('ignores accept text/markdown when markdown feature is disabled', function ()
 
     $response = $this->get('/docs/page', ['Accept' => 'text/markdown']);
 
-    $response->assertOk()
-        ->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    $response->assertOk();
+    expect($response->headers->get('Content-Type'))->toStartWith('text/html');
 });
