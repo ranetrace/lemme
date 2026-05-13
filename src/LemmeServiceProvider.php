@@ -10,6 +10,7 @@ use Ranetrace\Lemme\Commands\LemmeClearCommand;
 use Ranetrace\Lemme\Commands\LemmeInstallCommand;
 use Ranetrace\Lemme\Commands\LemmePublishCommand;
 use Ranetrace\Lemme\Commands\LemmeReindexCommand;
+use Ranetrace\Lemme\Livewire\SearchComponent;
 use Ranetrace\Lemme\Support\ContentRenderer;
 use Ranetrace\Lemme\Support\NavigationBuilder;
 use Ranetrace\Lemme\Support\PageRepository;
@@ -31,7 +32,7 @@ class LemmeServiceProvider extends ServiceProvider
         $this->app->singleton(SearchIndexBuilder::class, fn () => new SearchIndexBuilder);
 
         // Bind the Lemme facade/root object
-        $this->app->singleton(\Ranetrace\Lemme\Lemme::class, function ($app) {
+        $this->app->singleton(Lemme::class, function ($app) {
             return new Lemme(
                 $app->make(PageRepository::class),
                 $app->make(NavigationBuilder::class),
@@ -41,7 +42,7 @@ class LemmeServiceProvider extends ServiceProvider
         });
 
         // Backwards compatible alias so resolve('lemme') still works
-        $this->app->alias(\Ranetrace\Lemme\Lemme::class, 'lemme');
+        $this->app->alias(Lemme::class, 'lemme');
     }
 
     public function boot(): void
@@ -64,7 +65,7 @@ class LemmeServiceProvider extends ServiceProvider
 
         // Register Livewire component
         if (class_exists(Livewire::class)) {
-            Livewire::component('lemme.search-component', \Ranetrace\Lemme\Livewire\SearchComponent::class);
+            Livewire::component('lemme.search-component', SearchComponent::class);
         }
 
         // Console-specific booting

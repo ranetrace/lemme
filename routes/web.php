@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Ranetrace\Lemme\Http\Controllers\DocsController;
+use Ranetrace\Lemme\Lemme;
 
 // Routes for documentation
 $subdomain = config('lemme.subdomain');
@@ -9,7 +10,7 @@ $routePrefix = config('lemme.route_prefix');
 
 if ($subdomain && ! $routePrefix) {
     // Use subdomain routing
-    Route::domain($subdomain.'.'.\Ranetrace\Lemme\Lemme::baseHost())
+    Route::domain($subdomain.'.'.Lemme::baseHost())
         ->middleware(['web'])
         ->group(function () {
             Route::get('/', [DocsController::class, 'show'])->name('lemme.home');

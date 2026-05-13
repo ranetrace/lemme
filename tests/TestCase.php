@@ -2,7 +2,9 @@
 
 namespace Ranetrace\Lemme\Tests;
 
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Ranetrace\Lemme\LemmeServiceProvider;
 
 class TestCase extends OrchestraTestCase
 {
@@ -28,8 +30,8 @@ class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Livewire\LivewireServiceProvider::class,
-            \Ranetrace\Lemme\LemmeServiceProvider::class,
+            LivewireServiceProvider::class,
+            LemmeServiceProvider::class,
         ];
     }
 }

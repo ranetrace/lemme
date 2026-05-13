@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Collection;
 use Ranetrace\Lemme\Facades\Lemme;
 use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
@@ -16,7 +17,7 @@ afterEach(function () {
 it('can get empty pages collection', function () {
     $pages = Lemme::getPages();
 
-    expect($pages)->toBeInstanceOf(\Illuminate\Support\Collection::class)
+    expect($pages)->toBeInstanceOf(Collection::class)
         ->and($pages)->toBeEmpty();
 });
 

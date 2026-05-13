@@ -12,7 +12,7 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         Event::listen(CommandStarting::class, function ($event) {
             if (str_starts_with($event->command, 'boost:')) {
-                app()->setBasePath(realpath(__DIR__ . '/../../../'));
+                app()->setBasePath(realpath(__DIR__.'/../../../'));
                 app()->useAppPath(base_path('src'));
 
                 config()->set(

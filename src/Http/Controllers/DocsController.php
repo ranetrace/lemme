@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Ranetrace\Lemme\Data\PageData;
 use Ranetrace\Lemme\Facades\Lemme;
 
 class DocsController extends Controller
@@ -97,7 +98,7 @@ class DocsController extends Controller
     /**
      * Build a text/markdown response for the given page.
      */
-    protected function markdownResponse(\Ranetrace\Lemme\Data\PageData $page): Response
+    protected function markdownResponse(PageData $page): Response
     {
         $markdown = $page->raw_content;
         $estimatedTokens = (int) ceil(mb_strlen($markdown) / 4);
