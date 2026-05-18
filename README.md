@@ -18,6 +18,7 @@ Lemme is a Laravel package that facilitates the creation of beautiful documentat
 - [Installation](#installation)
 - [Configuration](#configuration)
     - [Logo Customization](#logo-customization)
+    - [Customizing Markdown Rendering](#customizing-markdown-rendering)
 - [Usage](#usage)
     - [Creating Documentation](#creating-documentation)
         - [Slug Configuration](#slug-configuration)
@@ -326,6 +327,48 @@ LEMME_LOGO_VIEW=branding.logo
 ```
 
 If a required variable for the chosen type is missing (or the view can't be resolved), Lemme gracefully falls back to the default bundled SVG logo.
+
+### Customizing Markdown Rendering
+
+Lemme owns a dedicated `MarkdownRenderer` instance configured under `lemme.markdown`. Your host application's `config/markdown.php` (from `spatie/laravel-markdown`) is left untouched — so any other Markdown rendering elsewhere in your app is unaffected by Lemme.
+
+GitHub Flavored Markdown (tables, task lists, autolinks, strikethrough) and heading permalinks are enabled by default, so things like this just work:
+
+```markdown
+| Feature | Status |
+| ------- | ------ |
+| Tables  | ✅     |
+| GFM     | ✅     |
+```
+
+To add or remove CommonMark extensions, publish the config (`php artisan vendor:publish --tag=lemme-config`) and edit the `markdown.extensions` array:
+
+```php
+'markdown' => [
+    'extensions' => [
+        \League\CommonMark\Extension\GithubFlavoredMarkdownExtension::class,
+        \League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension::class,
+        // Add e.g. smart punctuation:
+        \League\CommonMark\Extension\SmartPunct\SmartPunctExtension::class,
+    ],
+
+    'highlight_theme' => [
+        'light' => 'github-light',
+        'dark' => 'github-dark',
+    ],
+
+    'commonmark_options' => [
+        'heading_permalink' => [
+            'insert' => 'none',
+            'apply_id_to_heading' => true,
+            'id_prefix' => '',
+            'fragment_prefix' => '',
+        ],
+    ],
+],
+```
+
+Each entry in `extensions` is a fully-qualified class name implementing `League\CommonMark\Extension\ExtensionInterface`; Lemme instantiates it per render. Pass any extension-specific configuration through `commonmark_options`.
 
 ## Usage
 

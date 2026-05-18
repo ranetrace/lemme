@@ -3,7 +3,6 @@
 namespace Ranetrace\Lemme\Support;
 
 use Illuminate\Support\Facades\Cache;
-use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 use Ranetrace\Lemme\Data\PageData;
 use Spatie\LaravelMarkdown\MarkdownRenderer;
 
@@ -19,19 +18,7 @@ class ContentRenderer
             return Cache::get($cacheKey);
         }
 
-        $html = app(MarkdownRenderer::class)
-            ->renderAnchors(false)
-            ->addExtension(new HeadingPermalinkExtension)
-            ->commonmarkOptions([
-                'heading_permalink' => [
-                    'insert' => 'none',
-                    'apply_id_to_heading' => true,
-                    'id_prefix' => '',
-                    'fragment_prefix' => '',
-                ],
-            ])
-            ->highlightTheme(['light' => 'github-light', 'dark' => 'github-dark'])
-            ->toHtml($page['raw_content']);
+        $html = $this->makeRenderer()->toHtml($page['raw_content']);
 
         if (config('lemme.cache.enabled')) {
             $previousKey = Cache::get($pointerKey);
@@ -53,5 +40,33 @@ class ContentRenderer
             Cache::forget($cacheKey);
             Cache::forget($pointerKey);
         }
+    }
+
+    /**
+     * Build a MarkdownRenderer scoped to Lemme.
+     *
+     * Owning the instance (instead of resolving spatie's container binding)
+     * guarantees Lemme's extensions and options never bleed into the host
+     * app's MarkdownRenderer.
+     */
+    protected function makeRenderer(): MarkdownRenderer
+    {
+        $extensions = array_map(
+            fn (string $class): object => new $class,
+            (array) config('lemme.markdown.extensions', []),
+        );
+
+        $renderer = new MarkdownRenderer(
+            commonmarkOptions: (array) config('lemme.markdown.commonmark_options', []),
+            highlightTheme: config('lemme.markdown.highlight_theme', 'github-light'),
+            cacheStoreName: false,
+            renderAnchors: false,
+        );
+
+        foreach ($extensions as $extension) {
+            $renderer->addExtension($extension);
+        }
+
+        return $renderer;
     }
 }

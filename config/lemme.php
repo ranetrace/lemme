@@ -1,5 +1,8 @@
 <?php
 
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -114,20 +117,88 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Markdown Responses (Markdown for Agents)
+    | Markdown
     |--------------------------------------------------------------------------
     |
-    | When enabled, clients that send an `Accept: text/markdown` header will
-    | receive the raw Markdown source instead of the rendered HTML page. This
-    | follows the "Markdown for Agents" convention popularised by Cloudflare,
-    | making your documentation directly consumable by AI agents and tools.
-    |
-    | Response headers include `Content-Type: text/markdown` and an
-    | `X-Markdown-Tokens` estimate so callers can budget context windows.
+    | Configures how Markdown documentation is rendered to HTML, as well as
+    | the optional "Markdown for Agents" response mode. Lemme renders pages
+    | through its own MarkdownRenderer instance so the host application's
+    | `config/markdown.php` (from spatie/laravel-markdown) is not touched.
     |
     */
     'markdown' => [
+
+        /*
+        |----------------------------------------------------------------------
+        | Markdown Responses (Markdown for Agents)
+        |----------------------------------------------------------------------
+        |
+        | When enabled, clients that send an `Accept: text/markdown` header
+        | will receive the raw Markdown source instead of the rendered HTML
+        | page. This follows the "Markdown for Agents" convention popularised
+        | by Cloudflare, making your documentation directly consumable by AI
+        | agents and tools.
+        |
+        | Response headers include `Content-Type: text/markdown` and an
+        | `X-Markdown-Tokens` estimate so callers can budget context windows.
+        |
+        */
         'enabled' => env('LEMME_MARKDOWN_ENABLED', true),
+
+        /*
+        |----------------------------------------------------------------------
+        | CommonMark Extensions
+        |----------------------------------------------------------------------
+        |
+        | The CommonMark extensions that should be wired into Lemme's renderer.
+        | Each entry is a fully-qualified class name; the class is instantiated
+        | per render. GitHub Flavored Markdown (tables, task lists, autolinks,
+        | strikethrough) and heading permalinks are enabled by default. Add or
+        | remove extensions to suit your project, e.g.
+        | `League\CommonMark\Extension\SmartPunct\SmartPunctExtension::class`.
+        |
+        */
+        'extensions' => [
+            GithubFlavoredMarkdownExtension::class,
+            HeadingPermalinkExtension::class,
+        ],
+
+        /*
+        |----------------------------------------------------------------------
+        | Syntax Highlighting Theme
+        |----------------------------------------------------------------------
+        |
+        | The Shiki theme(s) used for code block highlighting. Provide a single
+        | theme string or an associative array with `light` and `dark` keys to
+        | emit both variants (recommended for dark-mode support). See the Shiki
+        | docs for the full list of theme names.
+        |
+        */
+        'highlight_theme' => [
+            'light' => 'github-light',
+            'dark' => 'github-dark',
+        ],
+
+        /*
+        |----------------------------------------------------------------------
+        | CommonMark Options
+        |----------------------------------------------------------------------
+        |
+        | Options forwarded to the CommonMark environment. The defaults below
+        | configure the HeadingPermalink extension to apply stable `id`
+        | attributes directly to heading elements without rendering a visible
+        | anchor link. Extend this array with options for any extra extensions
+        | you enable (e.g. `table_of_contents`, `mentions`, `embed`).
+        |
+        */
+        'commonmark_options' => [
+            'heading_permalink' => [
+                'insert' => 'none',
+                'apply_id_to_heading' => true,
+                'id_prefix' => '',
+                'fragment_prefix' => '',
+            ],
+        ],
     ],
 
     /*
