@@ -4,6 +4,9 @@ All notable changes to `ranetrace/lemme` will be documented in this file.
 
 ## Unreleased
 
+### Added
+- Configurable favicon for the docs layout via a new `lemme.favicon` config block (`LEMME_FAVICON_*` env vars), mirroring the existing `logo` pattern. Supports `type=file` (`<link rel="icon">` plus optional apple-touch-icon) and `type=view` (render your own Blade partial in `<head>` for a full modern set). Opt-in: the default `type=none` emits nothing, leaving the docs `<head>` byte-identical to before — no change for existing installs on upgrade. See the "Favicon Customization" section in the README.
+
 ### Fixed
 - Docs search no longer fails to initialize when Livewire boots before the deferred search bundle. The search instance is now created synchronously and the Livewire data request is order-independent, so `lemmeSearchInstance not available` no longer occurs on a fresh full page load.
 

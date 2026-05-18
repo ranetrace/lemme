@@ -12,6 +12,24 @@
 
     <!-- Fuse.js Search -->
     <script src="{{ asset('vendor/lemme/search.js') }}" defer></script>
+@php($favicon = config('lemme.favicon'))
+@switch($favicon['type'] ?? 'none')
+@case('file')
+@if(!empty($favicon['href']))
+<link rel="icon" href="{{ \Illuminate\Support\Str::startsWith($favicon['href'], ['http://', 'https://', '/']) ? $favicon['href'] : asset($favicon['href']) }}"@if(!empty($favicon['mime'])) type="{{ $favicon['mime'] }}"@endif>
+@if(!empty($favicon['apple_touch']))
+<link rel="apple-touch-icon" href="{{ \Illuminate\Support\Str::startsWith($favicon['apple_touch'], ['http://', 'https://', '/']) ? $favicon['apple_touch'] : asset($favicon['apple_touch']) }}">
+@endif
+@endif
+@break
+@case('view')
+@if(!empty($favicon['view']) && view()->exists($favicon['view']))
+@include($favicon['view'])
+@endif
+@break
+@case('none')
+@default
+@endswitch
 
     <style>
         [x-cloak] {

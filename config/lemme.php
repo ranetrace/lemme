@@ -245,4 +245,40 @@ return [
         // Additional CSS classes applied to the root element of image/text variants
         'classes' => env('LEMME_LOGO_CLASSES', 'h-6 text-black dark:text-white'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Favicon
+    |--------------------------------------------------------------------------
+    |
+    | Configure the favicon emitted in the documentation layout's <head>.
+    | The docs site is served from its own standalone HTML document, so it
+    | does not inherit the host application's favicon. Supported types:
+    | - none : emit nothing (default; no <link rel="icon"> at all)
+    | - file : emit <link rel="icon"> (plus optional apple-touch-icon)
+    | - view : render a Blade view inside <head> (escape hatch for a full
+    |          modern set: SVG + .ico + apple-touch + manifest + theme-color)
+    |
+    | Keys per type:
+    | - file : `href` (path relative to public/ or absolute URL; required),
+    |          `mime` (optional, e.g. image/svg+xml, image/png),
+    |          `apple_touch` (optional path/URL for apple-touch-icon)
+    | - view : `view` (Blade view rendered verbatim inside <head>)
+    |
+    | You can override via env vars, e.g.:
+    |   LEMME_FAVICON_TYPE=file
+    |   LEMME_FAVICON_HREF="favicon.ico"
+    |   LEMME_FAVICON_MIME="image/x-icon"
+    |   LEMME_FAVICON_APPLE_TOUCH="apple-touch-icon.png"
+    |
+    */
+    'favicon' => [
+        'type' => env('LEMME_FAVICON_TYPE', 'none'), // none | file | view
+        // type=file:
+        'href' => env('LEMME_FAVICON_HREF', null),               // path relative to public/ or absolute URL
+        'mime' => env('LEMME_FAVICON_MIME', null),                // optional, e.g. image/svg+xml, image/png
+        'apple_touch' => env('LEMME_FAVICON_APPLE_TOUCH', null),  // optional path/URL for apple-touch-icon
+        // type=view:
+        'view' => env('LEMME_FAVICON_VIEW', null),                // Blade view rendered inside <head>
+    ],
 ];

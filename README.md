@@ -18,6 +18,7 @@ Lemme is a Laravel package that facilitates the creation of beautiful documentat
 - [Installation](#installation)
 - [Configuration](#configuration)
     - [Logo Customization](#logo-customization)
+    - [Favicon Customization](#favicon-customization)
     - [Customizing Markdown Rendering](#customizing-markdown-rendering)
 - [Usage](#usage)
     - [Creating Documentation](#creating-documentation)
@@ -274,6 +275,36 @@ return [
         // Additional CSS classes applied to the root element of image/text variants
         'classes' => env('LEMME_LOGO_CLASSES', 'h-6 text-black dark:text-white'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Favicon
+    |--------------------------------------------------------------------------
+    |
+    | Configure the favicon emitted in the documentation layout's <head>.
+    | The docs site is served from its own standalone HTML document, so it
+    | does not inherit the host application's favicon. Supported types:
+    | - none : emit nothing (default; no <link rel="icon"> at all)
+    | - file : emit <link rel="icon"> (plus optional apple-touch-icon)
+    | - view : render a Blade view inside <head> (escape hatch for a full
+    |          modern set: SVG + .ico + apple-touch + manifest + theme-color)
+    |
+    | You can override via env vars, e.g.:
+    |   LEMME_FAVICON_TYPE=file
+    |   LEMME_FAVICON_HREF="favicon.ico"
+    |   LEMME_FAVICON_MIME="image/x-icon"
+    |   LEMME_FAVICON_APPLE_TOUCH="apple-touch-icon.png"
+    |
+    */
+    'favicon' => [
+        'type' => env('LEMME_FAVICON_TYPE', 'none'), // none | file | view
+        // type=file:
+        'href' => env('LEMME_FAVICON_HREF', null),               // path relative to public/ or absolute URL
+        'mime' => env('LEMME_FAVICON_MIME', null),                // optional, e.g. image/svg+xml, image/png
+        'apple_touch' => env('LEMME_FAVICON_APPLE_TOUCH', null),  // optional path/URL for apple-touch-icon
+        // type=view:
+        'view' => env('LEMME_FAVICON_VIEW', null),                // Blade view rendered inside <head>
+    ],
 ];
 ```
 
@@ -327,6 +358,42 @@ LEMME_LOGO_VIEW=branding.logo
 ```
 
 If a required variable for the chosen type is missing (or the view can't be resolved), Lemme gracefully falls back to the default bundled SVG logo.
+
+### Favicon Customization
+
+Lemme serves documentation from its own standalone HTML document, so the docs pages do **not** inherit your host application's `<head>` favicon tags. Favicon support is therefore explicit Lemme config, mirroring the [logo](#logo-customization) pattern.
+
+> The default is `none` — Lemme emits **no** favicon markup at all, leaving the docs `<head>` byte-identical to previous versions. Upgrading changes nothing until you opt in.
+
+| Type | Env Setting              | Required Extra Vars              | Description                                            |
+|------|--------------------------|----------------------------------|--------------------------------------------------------|
+| none | `LEMME_FAVICON_TYPE=none` | —                                | Emits nothing (default)                                |
+| file | `LEMME_FAVICON_TYPE=file` | `LEMME_FAVICON_HREF` (path/URL)  | Emits `<link rel="icon">` (+ optional apple-touch-icon) |
+| view | `LEMME_FAVICON_TYPE=view` | `LEMME_FAVICON_VIEW` (view name) | Renders your Blade partial inside `<head>`             |
+
+The `href`/`apple_touch` paths follow the same resolution rule as the image logo: a value starting with `http://`, `https://`, or `/` is used verbatim, otherwise it is passed through `asset()` (relative to `public/`). This matters when `LEMME_SUBDOMAIN` is set, since the browser's default `/favicon.ico` request would otherwise resolve against the wrong docroot.
+
+Simple `.ico` favicon:
+```
+LEMME_FAVICON_TYPE=file
+LEMME_FAVICON_HREF=favicon.ico
+```
+
+SVG favicon with an Apple touch icon:
+```
+LEMME_FAVICON_TYPE=file
+LEMME_FAVICON_HREF=favicon.svg
+LEMME_FAVICON_MIME=image/svg+xml
+LEMME_FAVICON_APPLE_TOUCH=apple-touch-icon.png
+```
+
+For a full modern set (SVG + `.ico` fallback + apple-touch-icon + `site.webmanifest` + `theme-color` + light/dark `media` queries), use the `view` escape hatch and put all the `<link>`/`<meta>` tags in your own Blade partial — Lemme intentionally does not model those individually in config:
+```
+LEMME_FAVICON_TYPE=view
+LEMME_FAVICON_VIEW=branding.favicon
+```
+
+If the configured view does not exist, Lemme emits nothing (it does not error and there is no default favicon partial).
 
 ### Customizing Markdown Rendering
 
