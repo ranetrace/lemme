@@ -2,6 +2,7 @@
 
 use Livewire\Livewire;
 use Ranetrace\Lemme\Livewire\SearchComponent;
+use Ranetrace\Lemme\Tests\Support\DocsFactory;
 
 beforeEach(function () {
     // Encryption key required by Livewire components
@@ -24,6 +25,46 @@ it('can initialize search data', function () {
     Livewire::test(SearchComponent::class)
         ->call('initSearchData')
         ->assertDispatched('search-data-ready');
+});
+
+it('dispatches search-data-ready with the search data on mount', function () {
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+    $docs->markdown('mounting.md', 'Mounting Guide', 'How to mount the widget.');
+
+    try {
+        // Mounting the component is the failing path in the browser: the JS
+        // bundle must already have created window.lemmeSearchInstance before
+        // this mount-time event fires. Guard the server side of that contract.
+        Livewire::test(SearchComponent::class)
+            ->assertDispatched('search-data-ready', function (string $event, array $params): bool {
+                return collect($params['data'] ?? [])->contains(
+                    fn ($entry) => ($entry['slug'] ?? null) === 'mounting'
+                );
+            });
+    } finally {
+        $docs->cleanup();
+    }
+});
+
+it('re-dispatches search-data-ready with the search data on the init-search-data event', function () {
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+    $docs->markdown('reindex.md', 'Reindex Guide', 'How to reindex the docs.');
+
+    try {
+        Livewire::test(SearchComponent::class)
+            ->call('initSearchData')
+            ->assertDispatched('search-data-ready', function (string $event, array $params): bool {
+                return collect($params['data'] ?? [])->contains(
+                    fn ($entry) => ($entry['slug'] ?? null) === 'reindex'
+                );
+            });
+    } finally {
+        $docs->cleanup();
+    }
 });
 
 it('dispatches search event when search updates', function () {

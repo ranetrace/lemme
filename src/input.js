@@ -133,19 +133,26 @@ class LemmeSearch {
     }
 }
 
-// Make it globally available
+// Create the instance synchronously when this module executes. The
+// constructor has no DOM dependency, and Livewire's blocking end-of-body
+// script can boot and deliver the mount-time `search-data-ready` event
+// before this deferred head bundle would reach DOMContentLoaded — gating
+// instantiation on DOMContentLoaded leaves the instance undefined for that
+// page view. The guard keeps re-execution from clobbering an existing one.
 window.LemmeSearch = LemmeSearch;
+window.lemmeSearchInstance = window.lemmeSearchInstance || new LemmeSearch();
 
-// Initialize for Livewire
-document.addEventListener('DOMContentLoaded', function () {
-    // Create global search instance
-    window.lemmeSearchInstance = new LemmeSearch();
-});
+// Ask the Livewire SearchComponent for the initial search data. Livewire
+// may already be initialized by the time this deferred script runs, so
+// dispatch immediately if it is and otherwise wait for the event.
+function requestInitialSearchData() {
+    window.Livewire && window.Livewire.dispatch('init-search-data');
+}
 
-// Listen for Livewire events to initialize search data
-document.addEventListener('livewire:initialized', function () {
-    // Dispatch event to get initial search data
-    Livewire.dispatch('init-search-data');
-});
+if (window.Livewire) {
+    requestInitialSearchData();
+} else {
+    document.addEventListener('livewire:initialized', requestInitialSearchData, { once: true });
+}
 
 export default LemmeSearch;
