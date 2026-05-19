@@ -4,6 +4,8 @@ All notable changes to `ranetrace/lemme` will be documented in this file.
 
 ## Unreleased
 
+## v3.0.6 - 2026-05-19
+
 ### Fixed
 - The "On this page" table of contents no longer shows phantom entries for `#`-prefixed lines (e.g. shell comments) inside fenced or indented code blocks. Headings are now collected from the CommonMark AST using the same parser that renders the page, so code-block content can never leak into the TOC and anchor `id`s stay aligned with the rendered headings by construction.
 
