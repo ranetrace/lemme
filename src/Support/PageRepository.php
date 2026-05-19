@@ -7,8 +7,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
+use League\CommonMark\Node\NodeIterator;
+use League\CommonMark\Node\RawMarkupContainerInterface;
+use League\CommonMark\Node\StringContainerHelper;
 use League\CommonMark\Normalizer\SlugNormalizer;
 use League\CommonMark\Normalizer\UniqueSlugNormalizer;
+use League\CommonMark\Parser\MarkdownParser;
 use Ranetrace\Lemme\Data\PageData;
 use Ranetrace\Lemme\Events\MarkdownParseFailed;
 use Spatie\YamlFrontMatter\YamlFrontMatter;
@@ -182,35 +189,48 @@ class PageRepository
         return (string) preg_replace('/^\d+[-_]/', '', $name);
     }
 
+    /**
+     * Collect headings from the CommonMark AST rather than scanning raw lines.
+     *
+     * Parsing with the same extensions/options the renderer uses means a `#`
+     * inside a fenced or indented code block is a code node, never a Heading,
+     * so it can never leak into the table of contents. When the
+     * HeadingPermalink extension is enabled (the default) it stamps each
+     * Heading with the exact `id` the rendered HTML carries, keeping TOC
+     * anchors aligned by construction.
+     *
+     * @return array<int, array{id:string,text:string,level:int,class:string}>
+     */
     protected function extractHeadings(string $markdownContent): array
     {
-        $slugger = new UniqueSlugNormalizer(new SlugNormalizer);
+        $environment = new Environment((array) config('lemme.markdown.commonmark_options', []));
+        $environment->addExtension(new CommonMarkCoreExtension);
+        foreach ((array) config('lemme.markdown.extensions', []) as $extensionClass) {
+            $environment->addExtension(new $extensionClass);
+        }
+
+        $document = (new MarkdownParser($environment))->parse($markdownContent);
+
+        $fallbackSlugger = new UniqueSlugNormalizer(new SlugNormalizer);
         $headings = [];
-        $lines = explode("\n", $markdownContent);
-        foreach ($lines as $line) {
-            if (preg_match('/^(#{1,6})\s+(.+)$/', trim($line), $matches)) {
-                $level = strlen($matches[1]);
-                $text = trim($matches[2]);
-                $plainText = $this->stripInlineMarkdown($text);
-                $headings[] = [
-                    'id' => $slugger->normalize($plainText),
-                    'text' => $text,
-                    'level' => $level,
-                    'class' => $this->getHeadingClass($level),
-                ];
+        foreach ($document->iterator(NodeIterator::FLAG_BLOCKS_ONLY) as $node) {
+            if (! $node instanceof Heading) {
+                continue;
             }
+
+            $text = StringContainerHelper::getChildText($node, [RawMarkupContainerInterface::class]);
+            $id = $node->data->get('attributes/id', null);
+            $level = $node->getLevel();
+
+            $headings[] = [
+                'id' => is_string($id) && $id !== '' ? $id : $fallbackSlugger->normalize($text),
+                'text' => $text,
+                'level' => $level,
+                'class' => $this->getHeadingClass($level),
+            ];
         }
 
         return $headings;
-    }
-
-    protected function stripInlineMarkdown(string $text): string
-    {
-        // Match the text CommonMark would see for slug generation: drop emphasis/code
-        // markers and unwrap [link](url) syntax so TOC ids align with rendered heading ids.
-        $text = preg_replace('/\[([^\]]+)\]\([^)]*\)/', '$1', $text);
-
-        return preg_replace('/[*_`]/', '', $text);
     }
 
     protected function getHeadingClass(int $level): string

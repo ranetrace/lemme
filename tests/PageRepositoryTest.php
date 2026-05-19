@@ -49,6 +49,73 @@ it('detects duplicate slugs and throws', function () {
     expect(fn () => $repo->all())->toThrow(RuntimeException::class);
 });
 
+it('does not collect headings from hash comments inside a fenced code block', function () {
+    $this->docs->file('usage.md', <<<'MD'
+---
+title: Usage Guide
+---
+
+## Usage
+
+```bash
+# Install the dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Start the development server
+npm run dev
+```
+MD);
+
+    $repo = new PageRepository(new SearchIndexBuilder);
+    $headings = $repo->all()->first()['headings'];
+    $texts = collect($headings)->pluck('text');
+
+    expect($texts->all())->toBe(['Usage'])
+        ->and($headings[0]['id'])->toBe('usage')
+        ->and($texts->implode('|'))->not->toContain('Install the dependencies')
+        ->and($texts->implode('|'))->not->toContain('Build the project')
+        ->and($texts->implode('|'))->not->toContain('Start the development server');
+});
+
+it('treats hashes inside every code-block variant as code, never headings', function () {
+    $this->docs->file('fences.md', <<<'MD'
+---
+title: Fences
+---
+
+## Real One
+
+~~~
+# tilde fence comment, not a heading
+~~~
+
+````
+```
+# inner triple fence does not close a quad fence, still code
+````
+
+    # four-space indented code block, not a heading
+
+A paragraph with `# inline code hash` that is not a heading.
+
+### Real Two
+MD);
+
+    $repo = new PageRepository(new SearchIndexBuilder);
+    $headings = $repo->all()->first()['headings'];
+    $texts = collect($headings)->pluck('text');
+
+    expect($texts->all())->toBe(['Real One', 'Real Two'])
+        ->and(collect($headings)->pluck('level')->all())->toBe([2, 3])
+        ->and($texts->implode('|'))->not->toContain('tilde')
+        ->and($texts->implode('|'))->not->toContain('inner triple')
+        ->and($texts->implode('|'))->not->toContain('four-space')
+        ->and($texts->implode('|'))->not->toContain('inline code hash');
+});
+
 it('caches pages when enabled and reuses cache', function () {
     config()->set('lemme.cache.enabled', true);
     Cache::flush();
