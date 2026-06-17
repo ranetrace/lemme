@@ -103,6 +103,13 @@
                             @include('lemme::partials.logo')
                         @endif
                         @break
+                    @case('component')
+                        @if(!empty($logo['component']))
+                            <x-dynamic-component :component="$logo['component']" />
+                        @else
+                            @include('lemme::partials.logo')
+                        @endif
+                        @break
                     @case('view')
                     @default
                         @include($logo['view'] ?? 'lemme::partials.logo')
