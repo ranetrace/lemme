@@ -15,7 +15,8 @@ it('reindexes and warms cache via artisan command', function () {
         ->assertExitCode(0)
         ->expectsOutputToContain('Indexed 2 pages');
 
+    // Pages are cached as a plain, object-free array (not a Collection of DTOs).
     $pages = Cache::get('lemme.pages');
-    expect($pages)->not->toBeNull()->and($pages->count())->toBe(2);
+    expect($pages)->toBeArray()->and($pages)->toHaveCount(2);
     expect(Cache::has('lemme.search_data'))->toBeTrue();
 });

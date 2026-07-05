@@ -35,9 +35,17 @@ class PageRepository
     {
         $cacheKey = 'lemme.pages';
 
-        if (config('lemme.cache.enabled') && Cache::has($cacheKey)) {
-            /** @var Collection<string, PageData> */
-            return Cache::get($cacheKey);
+        if (config('lemme.cache.enabled')) {
+            $cached = Cache::get($cacheKey);
+
+            // Pages are cached as a plain array of page data (never PageData
+            // objects), so a consuming application never has to allow-list
+            // Lemme's DTOs in its cache.serializable_classes. A non-array
+            // payload is a stale or foreign format and is treated as a miss so
+            // the pages rebuild cleanly.
+            if (is_array($cached)) {
+                return collect($cached)->map(fn (array $page): PageData => PageData::fromArray($page));
+            }
         }
 
         $docsPath = base_path(config('lemme.docs_directory', 'docs'));
@@ -72,7 +80,9 @@ class PageRepository
         $pages = $pages->keyBy('slug');
 
         if (config('lemme.cache.enabled')) {
-            Cache::put($cacheKey, $pages, config('lemme.cache.ttl', 3600));
+            // Cache the array form (toArray() recurses through the PageData DTOs)
+            // so the payload is free of objects; all() rehydrates on read.
+            Cache::put($cacheKey, $pages->toArray(), config('lemme.cache.ttl', 3600));
             // Search index builder expects an iterable of PageData; values() preserves order
             $this->searchIndexBuilder->buildAndCache($pages->values(), fn ($slug) => app('lemme')->getPageUrl($slug));
         }

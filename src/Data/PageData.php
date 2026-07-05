@@ -42,6 +42,27 @@ class PageData implements Arrayable, ArrayAccess
         ];
     }
 
+    /**
+     * Rehydrate a PageData from its array form. Inverse of toArray(), so the
+     * repository can cache pages as plain arrays and reconstruct them on read.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            title: $data['title'],
+            slug: $data['slug'],
+            raw_content: $data['raw_content'],
+            headings: $data['headings'],
+            frontmatter: $data['frontmatter'],
+            filepath: $data['filepath'],
+            relative_path: $data['relative_path'],
+            modified_at: $data['modified_at'],
+            created_at: $data['created_at'],
+        );
+    }
+
     // ArrayAccess ---------------------------------------------------------
     public function offsetExists(mixed $offset): bool
     {
