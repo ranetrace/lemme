@@ -18,7 +18,9 @@ class ContentRenderer
             return Cache::get($cacheKey);
         }
 
-        $html = $this->makeRenderer()->toHtml($page['raw_content']);
+        $html = $this->wrapUnhighlightedCodeBlocks(
+            $this->makeRenderer()->toHtml($page['raw_content'])
+        );
 
         if (config('lemme.cache.enabled')) {
             $previousKey = Cache::get($pointerKey);
@@ -30,6 +32,28 @@ class ContentRenderer
         }
 
         return $html;
+    }
+
+    /**
+     * Guarantee every fenced code block renders as a block, even when Shiki
+     * cannot highlight its language.
+     *
+     * When Shiki rejects a fence's language (for example ```env, which it does
+     * not know), the Shiki highlighter swallows the error and returns the base
+     * renderer's *inner* content: a bare `<code class="language-x">` with no
+     * surrounding `<pre>`. Browsers treat that as inline code, and a typographic
+     * stylesheet even decorates it with literal backticks. Re-wrap those orphaned
+     * elements so an unhighlighted fence still reads as a code block rather than
+     * inline text. Successfully highlighted blocks are emitted as
+     * `<pre class="shiki">…` with an unclassed inner `<code>`, so they never match.
+     */
+    protected function wrapUnhighlightedCodeBlocks(string $html): string
+    {
+        return preg_replace(
+            '/<code class="language-[^"]*">.*?<\/code>/s',
+            '<pre>$0</pre>',
+            $html,
+        ) ?? $html;
     }
 
     public function clearCacheForPages(iterable $pages): void
