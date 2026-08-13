@@ -28,6 +28,7 @@ Lemme is a Laravel package that facilitates the creation of beautiful documentat
             - [Quick Reference Summary](#quick-reference-summary)
     - [Directory-based Navigation Grouping](#directory-based-navigation-grouping)
     - [Accessing Documentation](#accessing-documentation)
+    - [Markdown for agents](#markdown-for-agents)
     - [API Access (Optional)](#api-access-optional)
     - [Commands](#commands)
     - [Publishing Assets / Views / Config](#publishing-assets--views--config)
@@ -65,6 +66,7 @@ It's really that simple. And totally free.
 - **Directory grouping**: Automatic navigation tree from folder structure
 - **Search-ready**: Plain‑text index built from rendered Markdown
 - **Anchors**: Stable heading IDs with automatic de‑duplication
+- **Agent-friendly**: Every page has a raw Markdown twin at `<page-url>.md` (or via `Accept: text/markdown`)
 
 > Note: The `theme` config key is currently a placeholder (only the bundled default + dark mode variant ships). Extra named themes are not yet implemented.
 
@@ -581,6 +583,37 @@ By default, your documentation will be available at:
 - **Subdomain**: `https://docs.yoursite.com` (set `route_prefix=null` and `subdomain=docs`)
 
 Precedence: If both `subdomain` and `route_prefix` are set, the route prefix wins (a notice is logged) and subdomain routing is ignored.
+
+### Markdown for agents
+
+Every page is also available as raw Markdown, so agents and tools can read your documentation without parsing HTML. There are two ways to ask for it:
+
+- **URL**: append `.md` to any page URL, e.g. `https://yoursite.com/docs/getting-started.md`
+- **Header**: request the normal page URL with `Accept: text/markdown`
+
+Both return the Markdown source with the frontmatter stripped, `Content-Type: text/markdown; charset=utf-8`, and an `X-Markdown-Tokens` header estimating the token count so callers can budget their context window.
+
+| Page | HTML URL | Markdown URL |
+|------|----------|--------------|
+| Home (`docs/index.md`) | `/docs` | `/docs/index.md` |
+| Regular page | `/docs/getting-started` | `/docs/getting-started.md` |
+| Nested slug | `/docs/guide/advanced` | `/docs/guide/advanced.md` |
+
+The home page's slug is empty, so it has no `.md` URL of its own; `/docs/index.md` serves it instead. If one of your pages explicitly claims the `index` slug, that page wins.
+
+Every HTML page points at its own twin from the `<head>`, so a crawler can discover it:
+
+```html
+<link rel="alternate" type="text/markdown" href="https://yoursite.com/docs/getting-started.md">
+```
+
+This is enabled by default. To turn both forms off, set:
+
+```
+LEMME_MARKDOWN_ENABLED=false
+```
+
+With the feature disabled the `.md` routes are not registered (they return 404), the `lemme.page.markdown` named route does not exist, the link tag is not rendered, and an `Accept: text/markdown` request gets the normal HTML page.
 
 ### API Access (Optional)
 

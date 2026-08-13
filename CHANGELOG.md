@@ -4,6 +4,9 @@ All notable changes to `ranetrace/lemme` will be documented in this file.
 
 ## Unreleased
 
+### Added
+- Every documentation page now has a Markdown twin at its own URL: append `.md` to any page URL (`/docs/getting-started.md`) to get the raw Markdown source, with the same `Content-Type: text/markdown` and `X-Markdown-Tokens` headers the `Accept: text/markdown` mode already returned. Agents and tools that cannot set request headers can now fetch documentation directly. The docs home page is served at `/docs/index.md`, since its own slug is empty. HTML pages advertise their twin with a `<link rel="alternate" type="text/markdown">` tag in the `<head>`. The twin routes follow the existing `lemme.markdown.enabled` flag, so setting `LEMME_MARKDOWN_ENABLED=false` leaves both the routes and the link tag out.
+
 ## v3.0.6 - 2026-05-19
 
 ### Fixed

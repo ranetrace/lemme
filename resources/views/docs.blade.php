@@ -6,6 +6,10 @@
     <title>{{ $page['title'] }} - {{ $siteTitle }}</title>
     <meta name="description" content="{{ $siteDescription }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+@if(config('lemme.markdown.enabled', true))
+    {{-- The Markdown twin of this page. The home page's slug is empty, so it is served at index.md. --}}
+    <link rel="alternate" type="text/markdown" href="{{ route('lemme.page.markdown', ['slug' => $page['slug'] === '' ? 'index' : $page['slug']]) }}">
+@endif
 
     <!-- Tailwind CSS 4 (compiled) -->
     <link rel="stylesheet" href="{{ asset('vendor/lemme/app.css') }}">

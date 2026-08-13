@@ -14,6 +14,12 @@ if ($subdomain && ! $routePrefix) {
         ->middleware(['web'])
         ->group(function () {
             Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
+
+            // Markdown twins (optional): /{slug}.md serves the raw Markdown source
+            if (config('lemme.markdown.enabled', true)) {
+                Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
+            }
+
             Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
 
             // API routes (optional)
@@ -30,6 +36,12 @@ if ($subdomain && ! $routePrefix) {
         ->middleware(['web'])
         ->group(function () {
             Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
+
+            // Markdown twins (optional): /{slug}.md serves the raw Markdown source
+            if (config('lemme.markdown.enabled', true)) {
+                Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
+            }
+
             Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
 
             // API routes (optional)
@@ -46,6 +58,12 @@ if ($subdomain && ! $routePrefix) {
         ->middleware(['web'])
         ->group(function () {
             Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
+
+            // Markdown twins (optional): /{slug}.md serves the raw Markdown source
+            if (config('lemme.markdown.enabled', true)) {
+                Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
+            }
+
             Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
 
             // API routes (optional)

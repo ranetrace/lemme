@@ -18,16 +18,9 @@ class DocsController extends Controller
     public function show(Request $request, string $slug = ''): View|Response
     {
         if (empty($slug)) {
-            $pages = Lemme::getPages();
+            $page = $this->resolveHomePage();
 
-            // Try to find an index page, otherwise show the first page
-            $page = $pages->first(fn ($p) => $p['slug'] === '');
-
-            if (! $page) {
-                $page = $pages->first();
-            }
-
-            $slug = $page['slug'];
+            $slug = $page['slug'] ?? '';
         } else {
             $page = Lemme::getPage($slug);
         }
@@ -59,6 +52,29 @@ class DocsController extends Controller
     }
 
     /**
+     * Serve the raw Markdown twin of a page at `<page-url>.md`.
+     *
+     * The docs home page is built from `index.md`, whose slug is an empty
+     * string, so it owns no `.md` URL of its own. `/index.md` therefore falls
+     * back to the home page, unless a real page claims the `index` slug, in
+     * which case that page wins.
+     */
+    public function showMarkdown(string $slug): Response
+    {
+        $page = Lemme::getPage($slug);
+
+        if (! $page && $slug === 'index') {
+            $page = $this->resolveHomePage();
+        }
+
+        if (! $page) {
+            abort(404, 'Documentation page not found');
+        }
+
+        return $this->markdownResponse($page);
+    }
+
+    /**
      * API endpoint to get all pages as JSON
      */
     public function api(Request $request): JsonResponse
@@ -81,6 +97,17 @@ class DocsController extends Controller
         }
 
         return response()->json(['page' => $page]);
+    }
+
+    /**
+     * Resolve the page shown at the docs root: the page with an empty slug
+     * (from `index.md`), falling back to the first page.
+     */
+    protected function resolveHomePage(): ?PageData
+    {
+        $pages = Lemme::getPages();
+
+        return $pages->first(fn ($page) => $page['slug'] === '') ?? $pages->first();
     }
 
     /**
