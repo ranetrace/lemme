@@ -15,7 +15,9 @@ class NavigationBuilder
      *
      * @param  Collection<string, PageData>  $pages  Pages keyed by slug (keys ignored for ordering).
      * @param  callable(string $slug): string  $urlResolver
-     * @return Collection<int, mixed>
+     * @return Collection<array-key, mixed> Grouped navigation is a list; the ungrouped branch
+     *                                      maps the pages collection and so keeps its slug
+     *                                      keys. Nothing reads the keys either way.
      */
     public function build(Collection $pages, callable $urlResolver): Collection
     {

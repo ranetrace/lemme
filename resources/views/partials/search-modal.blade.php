@@ -22,11 +22,12 @@
              @click.stop
              @keydown.escape="searchModalOpen = false"
              class="mx-auto transform-gpu overflow-hidden rounded-lg bg-zinc-50 shadow-xl ring-1 ring-zinc-900/7.5 sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800">
-            <div role="combobox" aria-expanded="false" aria-haspopup="listbox">
-                <form action="" novalidate="" role="search">
-                    <livewire:lemme.search-component />
-                </form>
-            </div>
+            {{-- The combobox roles used to sit on a wrapper around this form, with an
+                 aria-expanded that never changed. They belong on the field itself, which
+                 is where the search component now carries them. --}}
+            <form action="" novalidate="" role="search">
+                <livewire:lemme.search-component />
+            </form>
         </div>
     </div>
 </div>

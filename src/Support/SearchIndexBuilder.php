@@ -15,7 +15,9 @@ class SearchIndexBuilder
     /**
      * Build and cache search data.
      *
-     * @param  Collection<string, PageData>  $pages  Pages keyed by slug (values order used for scoring order).
+     * @param  Collection<array-key, PageData>  $pages  Pages in scoring order. The keys are
+     *                                                  ignored, so a caller passes either the
+     *                                                  slug-keyed collection or its values().
      */
     public function buildAndCache(Collection $pages, callable $urlResolver): void
     {
@@ -39,7 +41,7 @@ class SearchIndexBuilder
     }
 
     /**
-     * @param  Collection<string, PageData>  $pages  Pages keyed by slug.
+     * @param  Collection<array-key, PageData>  $pages  Pages in scoring order; the keys are ignored.
      * @return array<int, array<string, mixed>>
      */
     protected function buildSearchDataFromPages(Collection $pages, callable $urlResolver): array

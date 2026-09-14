@@ -1,0 +1,10 @@
+parameters:
+    # config/ is deliberately not analysed. Larastan's noEnvCallsOutsideOfConfig rule
+    # decides what "the config directory" is from the booted application's config path,
+    # which for a package is the host application's, never the package's own. Every
+    # env() call in config/lemme.php is reported, and a config file is exactly where
+    # env() belongs.
+    paths:
+        - src
+        - routes
+    level: 5
