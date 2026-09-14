@@ -25,3 +25,31 @@ jobs:
 
       - name: Check formatting
         run: vendor/bin/pint --test
+
+  # resources/dist is a committed build: nothing rebuilds it when the package is
+  # installed, so a source change nobody rebuilt ships the previous stylesheet to
+  # every consuming site. This is the only thing standing between that and main.
+  dist:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Check the committed build is current
+        run: |
+          if [ -n "$(git status --porcelain resources/dist)" ]; then
+            echo "resources/dist does not match a build of the current sources."
+            echo "Run 'bun run build' and commit resources/dist."
+            git --no-pager diff --stat resources/dist
+            exit 1
+          fi

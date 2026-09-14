@@ -1,12 +1,21 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 
 @plugin '@tailwindcss/typography';
 
-/* Relative to this file, which lives in src/: the Blade views are a directory up
-   and the PHP that carries classes is alongside. Rooted at the project instead,
-   both paths pointed at directories that do not exist. */
+/* source(none) turns off Tailwind's automatic scan of the project, so the list
+   below is the whole of what the build reads. Adding a @source does not turn
+   that scan off, which is how a class written in a test or in the README reached
+   the shipped stylesheet: nothing in the package renders those files, and a
+   consuming site pays for the rules either way.
+
+   Every file that carries a class is listed. Paths are relative to this file,
+   which lives in src/: the Blade views are a directory up, and the PHP that
+   writes classes (HighlightedCodeBlockRenderer) and the JavaScript that writes
+   them (the search highlight element) are alongside. The stubs are Markdown and
+   carry no classes, so they are deliberately not listed. */
 @source '../resources/views/**/*.blade.php';
 @source './**/*.php';
+@source './input.js';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
