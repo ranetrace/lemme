@@ -63,6 +63,35 @@
                  link.click();
              }
          },
+
+         // Both strips below are rendered with x-html, so whatever they return has
+         // to be HTML safe: the search instance escapes the text itself and puts the
+         // highlight elements around the escaped pieces. The fallbacks passed in are
+         // escaped server side, for the pass where the browser has no match data yet.
+         titleHtml(index, fallback) {
+             const result = this.highlightedResults[index];
+
+             if (! result || ! window.lemmeSearchInstance) {
+                 return fallback;
+             }
+
+             return window.lemmeSearchInstance.highlightMatches(result.title, result.matches, 'title');
+         },
+
+         // The excerpt is cut from the full indexed content the browser already
+         // holds, not from a string the server truncated: Fuse reports its match
+         // indices against the value it indexed, so a shorter string moves every
+         // position under them, which is how tag fragments and class names used to
+         // end up in the excerpt as content.
+         excerptHtml(index, fallback) {
+             const result = this.highlightedResults[index];
+
+             if (! result || typeof result.content !== 'string' || ! window.lemmeSearchInstance) {
+                 return fallback;
+             }
+
+             return window.lemmeSearchInstance.highlightExcerpt(result.content, result.matches, 'content', 120);
+         },
      }"
      @search-data-ready.window="
          if (window.lemmeSearchInstance) {
@@ -157,19 +186,7 @@
                          still works, and Enter on the active option clicks this link. --}}
                     <a href="{{ $result['url'] }}" tabindex="-1" class="block cursor-pointer px-4 py-3 group-aria-selected:bg-zinc-50 dark:group-aria-selected:bg-zinc-800/50">
                         <div class="text-sm font-medium text-zinc-900 group-aria-selected:text-lemme-accent dark:text-white">
-                            <span x-html="
-                                (() => {
-                                    const result = highlightedResults[{{ $index }}];
-                                    if (result && result.matches && window.lemmeSearchInstance) {
-                                        return window.lemmeSearchInstance.highlightMatches(
-                                            '{{ addslashes($result['title']) }}',
-                                            result.matches,
-                                            'title'
-                                        );
-                                    }
-                                    return '{{ addslashes($result['title']) }}';
-                                })()
-                            "></span>
+                            <span x-html="titleHtml({{ $index }}, @js(e($result['title'])))"></span>
                         </div>
                         <div class="mt-1 flex items-center gap-2 text-2xs whitespace-nowrap text-zinc-500">
                             <span>{{ $result['category'] }}</span>
@@ -181,19 +198,7 @@
                         </div>
                         @if(strlen($search) > 0 && !empty($result['content']))
                             <div class="mt-1 text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
-                                <span x-html="
-                                    (() => {
-                                        const result = highlightedResults[{{ $index }}];
-                                        if (result && result.matches && window.lemmeSearchInstance) {
-                                            return window.lemmeSearchInstance.highlightMatches(
-                                                '{{ addslashes(Str::limit($result['content'], 120)) }}',
-                                                result.matches,
-                                                'content'
-                                            );
-                                        }
-                                        return '{{ addslashes(Str::limit($result['content'], 120)) }}';
-                                    })()
-                                "></span>
+                                <span x-html="excerptHtml({{ $index }}, @js(e(Str::limit($result['content'], 120))))"></span>
                             </div>
                         @endif
                     </a>

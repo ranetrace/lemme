@@ -46,7 +46,12 @@ class SearchIndexBuilder
      */
     protected function buildSearchDataFromPages(Collection $pages, callable $urlResolver): array
     {
-        return $pages->map(function ($page) use ($urlResolver) {
+        // values() before toArray(): a slug-keyed collection becomes a string-keyed
+        // array, which serialises to a JSON object, and the browser hands that object
+        // straight to Fuse, which can only iterate a list. On the cached path the
+        // caller already passes values(), so only an uncached site ever saw search
+        // stop working.
+        return $pages->values()->map(function ($page) use ($urlResolver) {
             return [
                 'title' => $page['title'],
                 'category' => $this->getCategoryFromPath($page['relative_path']),
@@ -79,12 +84,37 @@ class SearchIndexBuilder
         $html = app(MarkdownRenderer::class)
             ->disableHighlighting()
             ->toHtml($content);
-        $text = trim((string) preg_replace('/\s+/', ' ', strip_tags($html)));
-        if ($maxLength > 0 && strlen($text) > $maxLength) {
-            return substr($text, 0, $maxLength).'...';
+        $text = $this->toPlainText($html);
+
+        // Counted in characters, not bytes: cutting a multi-byte character in half
+        // leaves a byte sequence that is not valid UTF-8, and the whole index is
+        // json_encoded on its way to the browser.
+        if ($maxLength > 0 && mb_strlen($text) > $maxLength) {
+            return mb_substr($text, 0, $maxLength).'...';
         }
 
         return $text;
+    }
+
+    /**
+     * Reduce rendered HTML to the plain text the index and its excerpts are built from.
+     *
+     * The order is the point. Tags are stripped first, so no markup can reach the
+     * index; entities are decoded only after that, so the `&lt;` a code block
+     * escaped comes back as the character the page shows instead of staying entity
+     * text that no query matches and that an excerpt would escape a second time.
+     * Decoding first would turn an escaped code sample into markup and strip it.
+     */
+    protected function toPlainText(string $html): string
+    {
+        $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // A non-breaking space arrives from `&nbsp;` and is whitespace to a reader,
+        // so it collapses with the rest. Text preg cannot walk is kept as it is
+        // rather than thrown away.
+        $collapsed = preg_replace('/[\s\x{00A0}]+/u', ' ', $text);
+
+        return trim($collapsed ?? $text);
     }
 
     protected function removeNumberPrefix(string $name): string

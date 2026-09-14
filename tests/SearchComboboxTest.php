@@ -197,3 +197,32 @@ it('exposes one combobox on a rendered documentation page', function () {
         $docs->cleanup();
     }
 });
+
+it('escapes the result text it renders as HTML and leaves the highlighting to the search instance', function () {
+    // Both result strips are rendered with x-html, so a title or an excerpt that is
+    // markup would be parsed as markup. The highlighting itself happens in the
+    // browser, against the indexed content the match indices were measured on: the
+    // view used to interpolate a truncated copy of that content, which moved every
+    // position under those indices and spliced tag fragments into the excerpt. The
+    // package ships no JavaScript test harness, so the wiring is asserted where it
+    // is declared.
+    $results = [
+        [
+            'title' => '<img src=x onerror="alert(1)">',
+            'category' => 'Guides',
+            'url' => '/docs/escaping',
+            'content' => 'An <script>alert(1)</script> excerpt.',
+            'score' => 0.1,
+        ],
+    ];
+
+    $html = Livewire::test(SearchComponent::class)
+        ->set('search', 'alert')
+        ->call('handleSearchResults', $results)
+        ->html();
+
+    expect($html)->toContain('x-html="titleHtml(0,')
+        ->and($html)->toContain('x-html="excerptHtml(0,')
+        ->and($html)->not->toContain('<img src=x')
+        ->and($html)->not->toContain('<script>alert(1)</script>');
+});

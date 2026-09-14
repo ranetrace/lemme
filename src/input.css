@@ -2,8 +2,11 @@
 
 @plugin '@tailwindcss/typography';
 
-@source './resources/views/**/*.blade.php';
-@source './src/**/*.php';
+/* Relative to this file, which lives in src/: the Blade views are a directory up
+   and the PHP that carries classes is alongside. Rooted at the project instead,
+   both paths pointed at directories that do not exist. */
+@source '../resources/views/**/*.blade.php';
+@source './**/*.php';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
