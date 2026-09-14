@@ -94,7 +94,7 @@ class SearchIndexBuilder
         $html = $this->renderers->make()
             ->disableHighlighting()
             ->toHtml($content);
-        $text = $this->toPlainText($html);
+        $text = $this->toPlainText($this->withoutOpeningTitleHeading($html));
 
         // Counted in characters, not bytes: cutting a multi-byte character in half
         // leaves a byte sequence that is not valid UTF-8, and the whole index is
@@ -104,6 +104,31 @@ class SearchIndexBuilder
         }
 
         return $text;
+    }
+
+    /**
+     * Drop the `h1` a document opens with, so `content` holds the body alone.
+     *
+     * A documentation page carries its title twice: once in the front matter,
+     * which is indexed as `title` and printed above every result, and once as
+     * the heading the body opens with. Indexed together, the excerpt the browser
+     * cuts from `content` began with the title the reader is already looking at,
+     * spending the whole of a 120 character window repeating it instead of
+     * showing the first sentence of the answer.
+     *
+     * The cut is made on the rendered html rather than on the markdown, because
+     * by then the renderer has already decided what a heading is: a `#` inside a
+     * fenced code block is code, a setext `Title` over `=====` is an `h1` with
+     * no `#` in sight, and the title heading has its permalink id attached. Only
+     * a leading `h1` goes. A heading further down is body content a reader may
+     * well be searching for, and a page that opens with an `h2` never repeated
+     * its title in the first place.
+     */
+    protected function withoutOpeningTitleHeading(string $html): string
+    {
+        $stripped = preg_replace('/\A\s*<h1\b[^>]*>.*?<\/h1>/is', '', $html, 1);
+
+        return $stripped ?? $html;
     }
 
     /**

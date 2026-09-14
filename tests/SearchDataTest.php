@@ -120,3 +120,95 @@ it('indexes the pages as a list when the cache is off', function () {
         $docs->cleanup();
     }
 });
+
+it('leaves the title heading a page opens with out of the indexed content', function () {
+    // The title is already its own indexed field and is printed above every
+    // result, so indexing the h1 that repeats it spent the whole excerpt window
+    // saying the title twice before reaching the first sentence of the answer.
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+
+    $docs->markdown('errors.md', 'PHP error tracking', <<<'MD'
+# PHP error tracking
+
+Error tracking is on by default.
+MD);
+
+    try {
+        $entry = collect(Lemme::getSearchData())->firstWhere('slug', 'errors');
+
+        expect($entry['content'])->toBe('Error tracking is on by default.');
+    } finally {
+        $docs->cleanup();
+    }
+});
+
+it('leaves out the setext title heading a page opens with', function () {
+    // Underlined with `=`, a title is an h1 with no `#` anywhere in the source,
+    // which is why the cut is made on the rendered html and not on the markdown.
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+
+    $docs->markdown('setext.md', 'Underlined title', <<<'MD'
+Underlined title
+================
+
+The body starts here.
+MD);
+
+    try {
+        $entry = collect(Lemme::getSearchData())->firstWhere('slug', 'setext');
+
+        expect($entry['content'])->toBe('The body starts here.');
+    } finally {
+        $docs->cleanup();
+    }
+});
+
+it('indexes a page that does not open with a heading unchanged', function () {
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+
+    $docs->markdown('notes.md', 'Notes', <<<'MD'
+Just a paragraph to begin with.
+
+## A section
+
+And its body.
+MD);
+
+    try {
+        $entry = collect(Lemme::getSearchData())->firstWhere('slug', 'notes');
+
+        expect($entry['content'])->toBe('Just a paragraph to begin with. A section And its body.');
+    } finally {
+        $docs->cleanup();
+    }
+});
+
+it('keeps a top level heading that is not the one the page opens with', function () {
+    // Only the opening heading repeats the title. A heading further down is body
+    // content, and a reader searching for those words expects to find the page.
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+
+    $docs->markdown('reference.md', 'Reference', <<<'MD'
+The opening line.
+
+# A later top level heading
+
+And its body.
+MD);
+
+    try {
+        $entry = collect(Lemme::getSearchData())->firstWhere('slug', 'reference');
+
+        expect($entry['content'])->toBe('The opening line. A later top level heading And its body.');
+    } finally {
+        $docs->cleanup();
+    }
+});
