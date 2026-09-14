@@ -2,6 +2,7 @@
 
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use Ranetrace\Lemme\Support\MarkdownRenderer;
 
 return [
     /*
@@ -144,6 +145,28 @@ return [
         |
         */
         'enabled' => env('LEMME_MARKDOWN_ENABLED', true),
+
+        /*
+        |----------------------------------------------------------------------
+        | Markdown Renderer
+        |----------------------------------------------------------------------
+        |
+        | The class Lemme builds per render. It must extend
+        | `Spatie\LaravelMarkdown\MarkdownRenderer` and keep that constructor's
+        | signature, since the options below are passed as named arguments.
+        |
+        | Lemme's own renderer is the default, and it exists to keep every code
+        | block inside a `<pre>` element. The vendor renderer drops the `<pre>`
+        | whenever Shiki cannot highlight a block, which happens for a language
+        | Shiki does not know and for every block when the web server cannot
+        | reach a Node binary; a browser then renders the block as inline text,
+        | collapsing a multi-line snippet onto one line.
+        |
+        | Point this at your own subclass to highlight documentation the way the
+        | rest of your application does.
+        |
+        */
+        'renderer' => MarkdownRenderer::class,
 
         /*
         |----------------------------------------------------------------------

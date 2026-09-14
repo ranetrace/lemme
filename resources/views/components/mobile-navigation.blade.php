@@ -23,7 +23,10 @@
              x-transition:leave="transform transition ease-in duration-75"
              x-transition:leave-start="translate-x-0"
              x-transition:leave-end="-translate-x-full">
-            <nav>
+            {{-- The same navigation the sidebar renders at desktop width, so it carries
+                 the same label. The dialog around it is aria-hidden while it is closed,
+                 so a screen reader is never offered both at once. --}}
+            <nav aria-label="Documentation">
                 <ul role="list" class="space-y-1">
                     @foreach ($navigation as $item)
                         @if ($item['type'] === 'page')

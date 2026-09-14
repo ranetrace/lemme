@@ -414,6 +414,8 @@ To add or remove CommonMark extensions, publish the config (`php artisan vendor:
 
 ```php
 'markdown' => [
+    'renderer' => \Ranetrace\Lemme\Support\MarkdownRenderer::class,
+
     'extensions' => [
         \League\CommonMark\Extension\GithubFlavoredMarkdownExtension::class,
         \League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension::class,
@@ -438,6 +440,20 @@ To add or remove CommonMark extensions, publish the config (`php artisan vendor:
 ```
 
 Each entry in `extensions` is a fully-qualified class name implementing `League\CommonMark\Extension\ExtensionInterface`; Lemme instantiates it per render. Pass any extension-specific configuration through `commonmark_options`.
+
+#### Swapping the Renderer
+
+`markdown.renderer` names the class Lemme builds per render. The default, `Ranetrace\Lemme\Support\MarkdownRenderer`, extends the Spatie renderer to keep every code block inside a `<pre>` element. The Spatie renderer returns only the *contents* of that element, which is fine while Shiki answers (a highlighted block brings its own `<pre class="shiki">`), but loses the `<pre>` on every path where Shiki cannot highlight: a language Shiki does not know, such as ` ```env `, and every block at once when the web server cannot reach a Node binary, which is the usual case under PHP-FPM. A browser renders what is left as inline code, so a multi-line snippet collapses onto one line.
+
+To highlight documentation the way the rest of your application does, point the key at your own class:
+
+```php
+'markdown' => [
+    'renderer' => \App\Support\Markdown\DocsRenderer::class,
+],
+```
+
+The class must extend `Spatie\LaravelMarkdown\MarkdownRenderer` and keep that constructor's signature, since Lemme passes `commonmarkOptions`, `highlightTheme`, `cacheStoreName` and `renderAnchors` as named arguments. Anything else throws an `InvalidArgumentException` naming the configured class rather than failing later inside a page render.
 
 ## Usage
 

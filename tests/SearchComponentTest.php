@@ -95,3 +95,34 @@ it('clears results when search is empty', function () {
         ->set('search', '')
         ->assertSet('results', []);
 });
+
+it('names the search field with a label tied to its id', function () {
+    // The field is the only search on the docs site and it carries no visible
+    // label, so without this it is announced as an unnamed edit field.
+    Livewire::test(SearchComponent::class)
+        ->assertSeeHtml('<label for="lemme-search"')
+        ->assertSeeHtml('Search the documentation')
+        ->assertSeeHtml('id="lemme-search"');
+});
+
+it('shows a focus ring on the search field instead of suppressing the outline', function () {
+    // outline-hidden with nothing in its place leaves a keyboard visitor no way
+    // to see where they are.
+    Livewire::test(SearchComponent::class)
+        ->assertDontSeeHtml('outline-hidden')
+        ->assertSeeHtml('focus-visible:outline-lemme-accent');
+});
+
+it('names the results list', function () {
+    $results = [[
+        'title' => 'Installation Guide',
+        'category' => 'Guides',
+        'url' => '/docs/installation',
+        'content' => 'How to install the system',
+        'score' => 0.1,
+    ]];
+
+    Livewire::test(SearchComponent::class)
+        ->call('handleSearchResults', $results)
+        ->assertSeeHtml('aria-label="Search results"');
+});

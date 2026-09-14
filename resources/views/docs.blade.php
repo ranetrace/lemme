@@ -74,6 +74,19 @@
       @keydown.cmd.k.prevent="searchModalOpen = true"
       @keydown.ctrl.k.prevent="searchModalOpen = true">
 
+{{-- First focusable element on the page, so a keyboard visitor reaches the documentation
+     without tabbing through the navigation toggle, the logo, the search and the theme
+     switcher on every single page. `sr-only` keeps it out of sight but in the tab order;
+     `focus:not-sr-only` brings it back the moment it takes focus.
+
+     Its z-index has to beat the fixed header's z-10 and the overlays' z-50: at an equal
+     index the element later in the document wins and paints straight over the focused
+     link, leaving it unreadable. --}}
+<a href="#main-content"
+   class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:rounded-md focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white dark:focus:bg-white dark:focus:text-zinc-900">
+    Skip to content
+</a>
+
 <!-- Top Navigation -->
 <div class="fixed inset-x-0 top-0 z-10 border-b border-gray-950/5 dark:border-white/10">
     <div class="flex h-14 items-center justify-between gap-8 px-4 sm:px-6 bg-white dark:bg-zinc-900">
@@ -166,7 +179,11 @@
     <!-- Sidebar Navigation -->
     <div class="max-lg:hidden border-r border-zinc-900/10 dark:border-white/10">
         <div class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto p-6">
-            <nav>
+            {{-- The mobile panel renders this same list a second time, under the same
+                 label: they are one navigation the layout shows at two widths, not two
+                 destinations to tell apart. Only one of them is exposed at a time, since
+                 the panel is a dialog that carries aria-hidden while it is closed. --}}
+            <nav aria-label="Documentation">
                 <ul class="space-y-1">
                     @foreach ($navigation as $item)
                         @if ($item['type'] === 'page')
@@ -186,17 +203,19 @@
     </div>
 
     <!-- Main Content -->
-    <div class="mx-auto w-full max-w-2xl lg:max-w-3xl">
+    {{-- The landmark the skip link jumps to, and the one region of the page that changes
+         from page to page. --}}
+    <main id="main-content" class="mx-auto w-full max-w-2xl lg:max-w-3xl">
         <div class="px-4 pt-10 pb-24 sm:px-6 xl:pr-0 prose dark:prose-invert">
             {!! $html !!}
         </div>
-    </div>
+    </main>
 
     <!-- Table of Contents -->
     <div class="max-xl:hidden">
         <div class="sticky top-14 max-h-[calc(100svh-3.5rem)] overflow-x-visible px-6 pt-10 pb-24">
             <h3 class="text-xs font-semibold text-zinc-900 dark:text-white">On this page</h3>
-            <x-lemme::table-of-contents-navigation class="mt-3" data-toc="true">
+            <x-lemme::table-of-contents-navigation class="mt-3" data-toc="true" aria-label="On this page">
                 <ul class="space-y-1">
                     @if (isset($page['headings']) && count($page['headings']) > 0)
                         @foreach($page['headings'] as $heading)

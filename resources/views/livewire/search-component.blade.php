@@ -20,10 +20,19 @@
         <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" class="pointer-events-none absolute top-0 left-3 h-full w-5 stroke-zinc-500">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"></path>
         </svg>
+        {{-- The field has no visible label: the magnifying glass beside it is decorative
+             and the placeholder disappears on the first keystroke. This names it without
+             taking any room. --}}
+        <label for="lemme-search" class="sr-only">Search the documentation</label>
         <input
+            id="lemme-search"
             wire:model.live.debounce.300ms="search"
             x-ref="searchInput"
-            class="flex-auto appearance-none bg-transparent pl-10 text-zinc-900 outline-hidden placeholder:text-zinc-500 focus:w-full focus:flex-none sm:text-sm dark:text-white [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
+            {{-- The outline is drawn inside the box rather than around it: the field is
+                 full bleed at the top of the panel, and the panel clips whatever crosses
+                 its rounded edge, so an outline sitting outside the box would be cut off
+                 on three sides. --}}
+            class="flex-auto appearance-none bg-transparent pl-10 text-zinc-900 placeholder:text-zinc-500 focus:w-full focus:flex-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-lemme-accent sm:text-sm dark:text-white [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
             aria-autocomplete="both"
             autocomplete="off"
             autocorrect="off"
@@ -37,7 +46,14 @@
 
     <div class="border-t border-zinc-200 bg-white dark:border-zinc-100/5 dark:bg-white/2.5">
         @if (count($results) > 0)
-            <ul role="listbox" class="max-h-80 overflow-y-auto">
+            {{-- A named list of links, not a listbox. A listbox promises its options can
+                 be walked with the arrow keys and that the active one is reported through
+                 aria-activedescendant, and nothing here does either: the results are
+                 plain links reached with Tab. Claiming the role would take the links out
+                 of the reading a screen reader gives them and hand back nothing. Wiring
+                 the whole combobox pattern is the real fix, and a bigger change than a
+                 label. --}}
+            <ul aria-label="Search results" class="max-h-80 overflow-y-auto">
                 @foreach($results as $index => $result)
                     <li class="group {{ $index > 0 ? 'border-t border-zinc-100 dark:border-zinc-800' : '' }}">
                         <a href="{{ $result['url'] }}" class="block cursor-pointer px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">

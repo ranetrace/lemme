@@ -3,8 +3,9 @@
 namespace Ranetrace\Lemme\Support;
 
 use Illuminate\Support\Facades\Cache;
+use InvalidArgumentException;
 use Ranetrace\Lemme\Data\PageData;
-use Spatie\LaravelMarkdown\MarkdownRenderer;
+use Spatie\LaravelMarkdown\MarkdownRenderer as BaseMarkdownRenderer;
 
 class ContentRenderer
 {
@@ -18,9 +19,7 @@ class ContentRenderer
             return Cache::get($cacheKey);
         }
 
-        $html = $this->wrapUnhighlightedCodeBlocks(
-            $this->makeRenderer()->toHtml($page['raw_content'])
-        );
+        $html = $this->makeRenderer()->toHtml($page['raw_content']);
 
         if (config('lemme.cache.enabled')) {
             $previousKey = Cache::get($pointerKey);
@@ -32,28 +31,6 @@ class ContentRenderer
         }
 
         return $html;
-    }
-
-    /**
-     * Guarantee every fenced code block renders as a block, even when Shiki
-     * cannot highlight its language.
-     *
-     * When Shiki rejects a fence's language (for example ```env, which it does
-     * not know), the Shiki highlighter swallows the error and returns the base
-     * renderer's *inner* content: a bare `<code class="language-x">` with no
-     * surrounding `<pre>`. Browsers treat that as inline code, and a typographic
-     * stylesheet even decorates it with literal backticks. Re-wrap those orphaned
-     * elements so an unhighlighted fence still reads as a code block rather than
-     * inline text. Successfully highlighted blocks are emitted as
-     * `<pre class="shiki">…` with an unclassed inner `<code>`, so they never match.
-     */
-    protected function wrapUnhighlightedCodeBlocks(string $html): string
-    {
-        return preg_replace(
-            '/<code class="language-[^"]*">.*?<\/code>/s',
-            '<pre>$0</pre>',
-            $html,
-        ) ?? $html;
     }
 
     public function clearCacheForPages(iterable $pages): void
@@ -72,15 +49,29 @@ class ContentRenderer
      * Owning the instance (instead of resolving spatie's container binding)
      * guarantees Lemme's extensions and options never bleed into the host
      * app's MarkdownRenderer.
+     *
+     * Which class that instance is comes from `lemme.markdown.renderer`, so a
+     * host application can render documentation its own way. The default keeps
+     * code blocks inside their `pre` element; see Lemme's MarkdownRenderer.
      */
-    protected function makeRenderer(): MarkdownRenderer
+    protected function makeRenderer(): BaseMarkdownRenderer
     {
         $extensions = array_map(
             fn (string $class): object => new $class,
             (array) config('lemme.markdown.extensions', []),
         );
 
-        $renderer = new MarkdownRenderer(
+        $rendererClass = (string) config('lemme.markdown.renderer', MarkdownRenderer::class);
+
+        // Rejecting the class here names it. Accepting it would fail further
+        // in, on a missing method, halfway through rendering someone's page.
+        if (! is_a($rendererClass, BaseMarkdownRenderer::class, allow_string: true)) {
+            throw new InvalidArgumentException(
+                "The configured lemme.markdown.renderer [{$rendererClass}] must extend [".BaseMarkdownRenderer::class.'].'
+            );
+        }
+
+        $renderer = new $rendererClass(
             commonmarkOptions: (array) config('lemme.markdown.commonmark_options', []),
             highlightTheme: config('lemme.markdown.highlight_theme', 'github-light'),
             cacheStoreName: false,
