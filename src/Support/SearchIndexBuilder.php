@@ -5,13 +5,16 @@ namespace Ranetrace\Lemme\Support;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Ranetrace\Lemme\Data\PageData;
-use Spatie\LaravelMarkdown\MarkdownRenderer;
 
 /**
  * Builds and caches the lightweight search index array.
  */
 class SearchIndexBuilder
 {
+    public function __construct(
+        protected MarkdownRendererFactory $renderers = new MarkdownRendererFactory,
+    ) {}
+
     /**
      * Build and cache search data.
      *
@@ -79,9 +82,16 @@ class SearchIndexBuilder
     protected function getSearchableContent(string $content): string
     {
         $maxLength = (int) config('lemme.search.max_content_length', 0);
-        // Skip Shiki syntax highlighting — search only needs plain text and Shiki is the
-        // expensive part of the render pipeline.
-        $html = app(MarkdownRenderer::class)
+
+        // The same renderer a page is rendered through, so the index holds the
+        // text the reader will find on the page. Resolving spatie's container
+        // binding here instead indexed through the host application's markdown
+        // config, which is configured for the host application's own content.
+        //
+        // Highlighting is off: the index only needs plain text, and Shiki is
+        // both the expensive part of the pipeline and the part that shells out
+        // to Node, which an index build has no reason to wait on.
+        $html = $this->renderers->make()
             ->disableHighlighting()
             ->toHtml($content);
         $text = $this->toPlainText($html);
