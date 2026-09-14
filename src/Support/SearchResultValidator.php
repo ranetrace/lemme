@@ -125,8 +125,8 @@ class SearchResultValidator
      * `/\host` as protocol-relative and would leave the site. An absolute url
      * passes only on http or https and only on a host this site serves
      * documentation on, which is the form the index actually carries: page urls
-     * are built with `url()`, so every genuine result is absolute and a
-     * path-only rule would reject the whole feature.
+     * are built through the named documentation routes, which generate absolute
+     * urls, so a path-only rule would reject the whole feature.
      *
      * Whitespace and control characters are rejected up front, everywhere in the
      * string: they are what splits a `javascript:` scheme into something
@@ -168,10 +168,17 @@ class SearchResultValidator
     /**
      * The hosts this installation serves documentation on.
      *
-     * The application's own host always counts, because that is the host
-     * `url()` builds the index with. A site routing its docs at a subdomain
-     * serves them from that host as well, so links written against it are the
-     * site's own too.
+     * Both hosts stay in the list because a documentation route lives on one or
+     * the other: the route-prefix layout serves the pages on the application's
+     * own host, the subdomain layout on `<subdomain>.<base host>`.
+     * `Lemme::getPageUrl()` builds the index through the named routes, so it
+     * writes whichever host the configured layout actually serves, and this
+     * list is what says that host is still this site.
+     *
+     * Listing the host the current layout does not use costs nothing: it is a
+     * host this installation owns either way, and an index cached before a
+     * layout change is then tolerated instead of being thrown out entry by entry
+     * as foreign.
      *
      * @return array<int, string>
      */

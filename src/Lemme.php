@@ -90,16 +90,34 @@ class Lemme
 
     /**
      * Get URL for a page
+     *
+     * Built through the named routes rather than `url()`. `routes/web.php`
+     * registers three layouts from config and they do not all live on the
+     * application's own host: a subdomain install serves `lemme.home` and
+     * `lemme.page` on `<subdomain>.<base host>`, which `url()` knows nothing
+     * about, so navigation links and search results pointed at the application
+     * host instead of the documentation host. The routes already carry the host
+     * and the prefix, so asking them is the one answer that holds for all three
+     * layouts.
+     *
+     * The home page is the page built from `index.md`, whose slug is the empty
+     * string (see `PageRepository::generateSlugFromFilename()`), and the docs
+     * root is a route of its own. So it is linked as `lemme.home`: handed to the
+     * page route, an empty slug is a missing parameter and throws
+     * UrlGenerationException, which would take down every navigation render and
+     * every index build on a site that has an `index.md`.
+     *
+     * Slugs keep their directory separators (`getting-started/install`). Laravel
+     * does not encode a `/` inside a route parameter, so a nested slug keeps its
+     * path shape; PageUrl tests pin that down.
      */
     public function getPageUrl(string $slug): string
     {
-        $prefix = config('lemme.route_prefix');
-
-        if ($prefix) {
-            return url($prefix.'/'.$slug);
+        if ($slug === '') {
+            return route('lemme.home');
         }
 
-        return url($slug);
+        return route('lemme.page', ['slug' => $slug]);
     }
 
     /**
