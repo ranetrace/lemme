@@ -20,6 +20,11 @@ jobs:
           php-version: '8.4'
           coverage: none
 
+      # There is no composer.lock in this repository, on purpose, so this step
+      # resolves the dependencies fresh on every run. A package is installed into
+      # applications that resolve their own dependency set; a committed lock
+      # would pin CI to one resolution and could hide an incompatibility a
+      # consumer would hit. Resolving anew every time is the point of the step.
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
