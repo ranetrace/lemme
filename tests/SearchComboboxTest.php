@@ -7,6 +7,9 @@ use Ranetrace\Lemme\Tests\Support\DocsFactory;
 /**
  * Two results, in the shape the Fuse index hands back.
  *
+ * Every key the component validates is present on purpose: a fixture missing one
+ * is rejected wholesale, which is what SearchResultValidator is for.
+ *
  * @return array<int, array<string, mixed>>
  */
 function searchResultsFixture(): array
@@ -17,6 +20,7 @@ function searchResultsFixture(): array
             'category' => 'Guides',
             'url' => '/docs/installation',
             'content' => 'How to install the system',
+            'slug' => 'installation',
             'score' => 0.1,
         ],
         [
@@ -24,6 +28,7 @@ function searchResultsFixture(): array
             'category' => 'Guides',
             'url' => '/docs/configuration',
             'content' => 'How to configure the system',
+            'slug' => 'configuration',
             'score' => 0.2,
         ],
     ];
@@ -212,6 +217,7 @@ it('escapes the result text it renders as HTML and leaves the highlighting to th
             'category' => 'Guides',
             'url' => '/docs/escaping',
             'content' => 'An <script>alert(1)</script> excerpt.',
+            'slug' => 'escaping',
             'score' => 0.1,
         ],
     ];

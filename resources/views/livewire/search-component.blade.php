@@ -100,9 +100,12 @@
              console.error('lemmeSearchInstance not available');
          }
      "
+     {{-- The browser is asked for exactly as many results as the component will
+          take back, so a result set the site itself produced can never trip the
+          cap: the number is SearchResultValidator::MAX_RESULTS in both places. --}}
      @perform-search.window="
          if (window.lemmeSearchInstance) {
-             const results = window.lemmeSearchInstance.search($event.detail.query, 5);
+             const results = window.lemmeSearchInstance.search($event.detail.query, {{ \Ranetrace\Lemme\Support\SearchResultValidator::MAX_RESULTS }});
              highlightedResults = results;
              activeIndex = -1;
              $wire.call('handleSearchResults', results);

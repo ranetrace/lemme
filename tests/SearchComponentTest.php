@@ -80,6 +80,7 @@ it('handles search results', function () {
             'category' => 'Guides',
             'url' => '/docs/installation',
             'content' => 'How to install the system',
+            'slug' => 'installation',
             'score' => 0.1,
         ],
     ];
@@ -119,6 +120,7 @@ it('names the results list', function () {
         'category' => 'Guides',
         'url' => '/docs/installation',
         'content' => 'How to install the system',
+        'slug' => 'installation',
         'score' => 0.1,
     ]];
 
