@@ -148,11 +148,7 @@
                  would otherwise submit and reload the page out from under the modal.
                  Escape is left to bubble to the panel, which closes the modal. --}}
             x-on:keydown.enter.prevent="openActiveOption()"
-            {{-- The outline is drawn inside the box rather than around it: the field is
-                 full bleed at the top of the panel, and the panel clips whatever crosses
-                 its rounded edge, so an outline sitting outside the box would be cut off
-                 on three sides. --}}
-            class="flex-auto appearance-none bg-transparent pl-10 text-zinc-900 placeholder:text-zinc-500 focus:w-full focus:flex-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-lemme-accent sm:text-sm dark:text-white [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
+            class="flex-auto appearance-none bg-transparent pl-10 text-zinc-900 placeholder:text-zinc-500 focus:w-full focus:flex-none focus-visible:outline-hidden sm:text-sm dark:text-white [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
             autocomplete="off"
             autocorrect="off"
             autocapitalize="none"
@@ -163,7 +159,7 @@
             type="search">
     </div>
 
-    <div class="border-t border-zinc-200 bg-white dark:border-zinc-100/5 dark:bg-white/2.5">
+    <div class="bg-white dark:bg-white/2.5 {{ $hasResults || strlen(trim($search)) > 0 ? 'border-t border-zinc-200 dark:border-zinc-100/5' : '' }}">
         {{-- The listbox is rendered on every pass, empty and hidden when there is nothing
              to show, because aria-controls on the field has to resolve to an element at
              all times. --}}
@@ -217,5 +213,13 @@
                 </div>
             </div>
         @endif
+    </div>
+
+    {{-- A visual hint only: the combobox roles already tell a screen reader how the
+         keys work. Shown where a keyboard is the likely input. --}}
+    <div aria-hidden="true" class="hidden gap-4 border-t border-zinc-200 bg-white px-4 py-2.5 text-2xs text-zinc-500 pointer-fine:flex dark:border-zinc-100/5 dark:bg-white/2.5">
+        <span><kbd class="rounded px-1 font-sans text-2xs text-zinc-600 ring-1 ring-zinc-900/10 dark:text-zinc-400 dark:ring-white/10">↑</kbd> <kbd class="rounded px-1 font-sans text-2xs text-zinc-600 ring-1 ring-zinc-900/10 dark:text-zinc-400 dark:ring-white/10">↓</kbd> to move</span>
+        <span><kbd class="rounded px-1 font-sans text-2xs text-zinc-600 ring-1 ring-zinc-900/10 dark:text-zinc-400 dark:ring-white/10">Enter</kbd> to open</span>
+        <span><kbd class="rounded px-1 font-sans text-2xs text-zinc-600 ring-1 ring-zinc-900/10 dark:text-zinc-400 dark:ring-white/10">Esc</kbd> to close</span>
     </div>
 </div>

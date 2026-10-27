@@ -106,12 +106,12 @@ it('names the search field with a label tied to its id', function () {
         ->assertSeeHtml('id="lemme-search"');
 });
 
-it('shows a focus ring on the search field instead of suppressing the outline', function () {
-    // outline-hidden with nothing in its place leaves a keyboard visitor no way
-    // to see where they are.
+it('leaves the focus marker to the panel instead of outlining the search field', function () {
+    // The field fills the panel, so an outline on it is cut by the panel's rounded
+    // edge. The panel's ring carries the focus instead, asserted on the docs page.
     Livewire::test(SearchComponent::class)
-        ->assertDontSeeHtml('outline-hidden')
-        ->assertSeeHtml('focus-visible:outline-lemme-accent');
+        ->assertDontSeeHtml('outline-lemme-accent')
+        ->assertSeeHtml('focus-visible:outline-hidden');
 });
 
 it('names the results list', function () {

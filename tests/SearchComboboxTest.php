@@ -232,3 +232,105 @@ it('escapes the result text it renders as HTML and leaves the highlighting to th
         ->and($html)->not->toContain('<img src=x')
         ->and($html)->not->toContain('<script>alert(1)</script>');
 });
+
+/**
+ * The class attribute of an element, split into its classes.
+ *
+ * @return array<int, string>
+ */
+function classesOf(DOMElement $element): array
+{
+    return preg_split('/\s+/', trim($element->getAttribute('class')), -1, PREG_SPLIT_NO_EMPTY);
+}
+
+function resultsWrapper(DOMXPath $xpath): DOMElement
+{
+    return $xpath->query('//*[@id="lemme-search-results"]/..')->item(0);
+}
+
+it('rings the search panel in the accent while the field has keyboard focus, in both themes', function () {
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+    config()->set('lemme.route_prefix', 'docs');
+    config()->set('lemme.subdomain', null);
+    $docs->markdown('page.md', 'My Page', 'Body copy.');
+
+    try {
+        $xpath = searchDocument($this->get('/docs/page')->assertOk()->getContent());
+
+        $panels = $xpath->query('//*[@role="dialog"]//div[contains(concat(" ", normalize-space(@class), " "), " ring-1 ")][.//input[@id="lemme-search"]]');
+
+        expect($panels)->toHaveCount(1)
+            ->and(classesOf($panels->item(0)))
+            ->toContain('has-[#lemme-search:focus-visible]:ring-lemme-accent')
+            ->toContain('dark:has-[#lemme-search:focus-visible]:ring-lemme-accent');
+    } finally {
+        $docs->cleanup();
+    }
+});
+
+it('shows the keys that work in the search as a hint row hidden from assistive technology', function () {
+    // A bare fragment has no charset, and the parser would read the arrows as Latin-1.
+    $xpath = searchDocument('<meta charset="utf-8">'.Livewire::test(SearchComponent::class)->html());
+
+    $rows = $xpath->query('//*[@aria-hidden="true"][.//kbd]');
+
+    expect($rows)->toHaveCount(1);
+
+    $keys = array_map(
+        fn (DOMNode $key): string => $key->textContent,
+        iterator_to_array($xpath->query('.//kbd', $rows->item(0))),
+    );
+
+    expect($keys)->toBe(['↑', '↓', 'Enter', 'Esc'])
+        ->and(classesOf($rows->item(0)))->toContain('hidden')->toContain('pointer-fine:flex');
+});
+
+it('keeps the hint row out of the results listbox', function () {
+    // Inside the listbox the hint would be read out among the options, and the
+    // listbox is hidden while empty, which would take the hint with it.
+    $xpath = searchDocument(
+        Livewire::test(SearchComponent::class)
+            ->call('handleSearchResults', searchResultsFixture())
+            ->html()
+    );
+
+    expect($xpath->query('//kbd'))->not->toHaveCount(0)
+        ->and($xpath->query('//*[@role="listbox"]//kbd'))->toHaveCount(0);
+});
+
+it('draws no divider above the results area while nothing is typed', function () {
+    $xpath = searchDocument(Livewire::test(SearchComponent::class)->html());
+
+    expect(classesOf(resultsWrapper($xpath)))->not->toContain('border-t');
+});
+
+it('draws a divider above the results area when it shows results', function () {
+    $xpath = searchDocument(
+        Livewire::test(SearchComponent::class)
+            ->call('handleSearchResults', searchResultsFixture())
+            ->html()
+    );
+
+    expect(classesOf(resultsWrapper($xpath)))->toContain('border-t');
+});
+
+it('draws a divider above the results area when a query finds nothing', function () {
+    $html = Livewire::test(SearchComponent::class)
+        ->set('search', 'nothing matches this')
+        ->html();
+
+    expect($html)->toContain('No results found')
+        ->and(classesOf(resultsWrapper(searchDocument($html))))->toContain('border-t');
+});
+
+it('resolves aria-controls to the listbox while nothing is typed', function () {
+    // The results wrapper changes with the query now, and the listbox inside it has
+    // to stay on the page throughout for the field's aria-controls to point at.
+    $xpath = searchDocument(Livewire::test(SearchComponent::class)->html());
+
+    $controls = $xpath->query('//*[@role="combobox"]')->item(0)->getAttribute('aria-controls');
+
+    expect($xpath->query('//*[@id="'.$controls.'"][@role="listbox"]'))->toHaveCount(1);
+});

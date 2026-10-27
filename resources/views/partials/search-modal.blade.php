@@ -21,7 +21,9 @@
              @click.away="searchModalOpen = false"
              @click.stop
              @keydown.escape="searchModalOpen = false"
-             class="mx-auto transform-gpu overflow-hidden rounded-lg bg-zinc-50 shadow-xl ring-1 ring-zinc-900/7.5 sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800">
+             {{-- The focus marker is this ring, not an outline on the field: the field
+                  fills the panel, so an outline on it is cut by the rounded edge. --}}
+             class="mx-auto transform-gpu overflow-hidden rounded-lg bg-zinc-50 shadow-xl ring-1 ring-zinc-900/7.5 has-[#lemme-search:focus-visible]:ring-lemme-accent sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800 dark:has-[#lemme-search:focus-visible]:ring-lemme-accent">
             {{-- The combobox roles used to sit on a wrapper around this form, with an
                  aria-expanded that never changed. They belong on the field itself, which
                  is where the search component now carries them. --}}
