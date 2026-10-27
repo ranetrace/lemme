@@ -340,7 +340,7 @@ You can fully customize the logo displayed in the header. Choose one of three re
 > - Swap light/dark variants conditionally
 > - Add accessible markup (ARIA labels, screen-reader text)
 > - Inject dynamic data (app version, beta badge, etc.)
-> - Reuse shared components / Tailwind classes
+> - Reuse shared components
 > - Evolve the logo without changing `.env` variables
 >
 > The `image` and `text` modes are intentionally lightweight shortcuts, but most projects should create and use a Blade partial.
@@ -355,7 +355,7 @@ Common optional variables:
 
 ```
 LEMME_LOGO_ALT="My Project"            # Alt text for image variant
-LEMME_LOGO_CLASSES="h-6 w-auto"        # Extra classes applied to root element
+LEMME_LOGO_CLASSES="h-6"              # Extra classes applied to root element
 ```
 
 Examples:
@@ -365,14 +365,14 @@ Image logo:
 LEMME_LOGO_TYPE=image
 LEMME_LOGO_IMAGE=images/logo.svg
 LEMME_LOGO_ALT="Acme Docs"
-LEMME_LOGO_CLASSES="h-8 w-auto"
+LEMME_LOGO_CLASSES="h-8"
 ```
 
 Text logo:
 ```
 LEMME_LOGO_TYPE=text
 LEMME_LOGO_TEXT="Acme Docs"
-LEMME_LOGO_CLASSES="text-lg font-bold"
+LEMME_LOGO_CLASSES="text-black dark:text-white"
 ```
 
 Custom view (via your own Blade partial):
@@ -383,7 +383,7 @@ LEMME_LOGO_VIEW=branding.logo
 
 If a required variable for the chosen type is missing (or the view can't be resolved), Lemme gracefully falls back to the default bundled SVG logo.
 
-A custom logo view is rendered inside Lemme's precompiled stylesheet, which carries only the classes Lemme's own files use, so a class your view relies on may have no rule at all. An SVG sized with a class Lemme does not ship (`w-auto`, for example) falls back to its `width` attribute and is centered in that box, which can push the mark far from the left edge. Size a custom logo with `width` and `height` attributes, or only with classes the shipped stylesheet already has.
+A custom logo view and the classes in `LEMME_LOGO_CLASSES` are styled only by Lemme's precompiled stylesheet, which carries only the classes Lemme's own files use, so a class your logo relies on may have no rule at all. An SVG sized with a class Lemme does not ship (`w-auto`, for example) falls back to its `width` attribute and is centered in that box, which can push the mark far from the left edge. Size a custom logo with `width` and `height` attributes, or only with classes the shipped stylesheet already has.
 
 ### Favicon Customization
 
