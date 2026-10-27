@@ -17,6 +17,7 @@ Lemme is a Laravel package that facilitates the creation of beautiful documentat
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
+    - [Accent Color](#accent-color)
     - [Logo Customization](#logo-customization)
     - [Favicon Customization](#favicon-customization)
     - [Customizing Markdown Rendering](#customizing-markdown-rendering)
@@ -310,6 +311,27 @@ return [
 ];
 ```
 
+### Accent Color
+
+The accent marks the active navigation link, the search field's focus outline, the active search result's title and the highlighted match in search results. It is pink by default. Set `accent_color` in `config/lemme.php` to change it, either as one CSS color for both themes:
+
+```php
+'accent_color' => 'oklch(42% 0.070 170)',
+```
+
+or `LEMME_ACCENT_COLOR="oklch(42% 0.070 170)"` in `.env`, or as a value per theme, with both keys required:
+
+```php
+'accent_color' => [
+    'light' => 'oklch(42% 0.070 170)',
+    'dark' => 'oklch(67% 0.105 170)',
+],
+```
+
+Hex colors, functional colors (`rgb()`, `hsl()`, `oklch()`, `color()` and the like, without nested functions such as `var()` or `calc()`) and named colors are accepted. Anything else throws an `InvalidArgumentException` naming the rejected value, since the value is printed into the page's `<style>`.
+
+The accent colors text (the active search result's title and the match highlight), so pick values that stay readable: the light value should clear 4.5:1 contrast on white, and the dark value on the zinc-900 background of the dark theme. A single color has to do both, which is why the per-theme form exists.
+
 ### Logo Customization
 
 You can fully customize the logo displayed in the header. Choose one of three rendering modes via the config file or environment variables.
@@ -360,6 +382,8 @@ LEMME_LOGO_VIEW=branding.logo
 ```
 
 If a required variable for the chosen type is missing (or the view can't be resolved), Lemme gracefully falls back to the default bundled SVG logo.
+
+A custom logo view is rendered inside Lemme's precompiled stylesheet, which carries only the classes Lemme's own files use, so a class your view relies on may have no rule at all. An SVG sized with a class Lemme does not ship (`w-auto`, for example) falls back to its `width` attribute and is centered in that box, which can push the mark far from the left edge. Size a custom logo with `width` and `height` attributes, or only with classes the shipped stylesheet already has.
 
 ### Favicon Customization
 

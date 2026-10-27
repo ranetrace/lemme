@@ -52,6 +52,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Accent Color
+    |--------------------------------------------------------------------------
+    |
+    | The color of the active navigation indicator, the search field's focus
+    | outline, the active search result's title and the search match highlight.
+    | Leave as null to keep the shipped pink. Provide a single CSS color for
+    | both themes, or an associative array with `light` and `dark` keys (both
+    | required). Accepted values are hex colors, functional colors such as
+    | `oklch(42% 0.070 170)` without nested functions, and named colors.
+    |
+    | The value colors text, so the light value should clear 4.5:1 contrast
+    | on white and the dark value on the zinc-900 background.
+    |
+    */
+    'accent_color' => env('LEMME_ACCENT_COLOR', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Site Title
     |--------------------------------------------------------------------------
     |

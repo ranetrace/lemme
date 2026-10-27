@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Ranetrace\Lemme\Data\PageData;
 use Ranetrace\Lemme\Facades\Lemme;
+use Ranetrace\Lemme\Support\AccentColor;
 
 class DocsController extends Controller
 {
@@ -47,6 +48,7 @@ class DocsController extends Controller
             'siteTitle' => config('lemme.site_title', 'Documentation'),
             'siteDescription' => config('lemme.site_description', 'Project Documentation'),
             'theme' => config('lemme.theme', 'default'),
+            'accentColor' => AccentColor::fromConfig(),
             'isMac' => $isMac,
         ]);
     }

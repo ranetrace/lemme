@@ -13,6 +13,12 @@
 
     <!-- Tailwind CSS 4 (compiled) -->
     <link rel="stylesheet" href="{{ asset('vendor/lemme/app.css') }}">
+@if($accentColor)
+    {{-- Unlayered, so it beats the variable's declaration in Tailwind's theme layer without !important. --}}
+    <style>
+{{ $accentColor->css() }}
+    </style>
+@endif
 
     <!-- Fuse.js Search -->
     <script src="{{ asset('vendor/lemme/search.js') }}" defer></script>
