@@ -33,6 +33,19 @@ class Lemme
     }
 
     /**
+     * The host the prefixed documentation routes are pinned to, or null when
+     * they answer on every host. A blank value counts as unset, so an empty
+     * `LEMME_DOMAIN=` in an env file keeps today's behavior instead of
+     * registering routes no request can match.
+     */
+    public static function domain(): ?string
+    {
+        $domain = config('lemme.domain');
+
+        return is_string($domain) && trim($domain) !== '' ? trim($domain) : null;
+    }
+
+    /**
      * Return base host from app configuration, with sensible fallback.
      */
     public static function baseHost(): string

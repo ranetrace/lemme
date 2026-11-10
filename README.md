@@ -164,6 +164,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Domain
+    |--------------------------------------------------------------------------
+    |
+    | The one host the documentation answers on under the route prefix, such
+    | as 'yoursite.com'. Every other host gets a 404, so an application that
+    | serves several hosts does not publish a copy of its documentation on
+    | each. Leave as null to answer on every host. The subdomain layout names
+    | its host already and ignores this value.
+    |
+    */
+    'domain' => env('LEMME_DOMAIN', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Theme
     |--------------------------------------------------------------------------
     |
@@ -623,6 +637,8 @@ By default, your documentation will be available at:
 - **Subdomain**: `https://docs.yoursite.com` (set `route_prefix=null` and `subdomain=docs`)
 
 Precedence: If both `subdomain` and `route_prefix` are set, the route prefix wins (a notice is logged) and subdomain routing is ignored.
+
+On an application that answers on more than one host (a public site, an app host, an API host), every host serves the route prefix, so each would publish a full copy of the documentation. Set `domain` (`LEMME_DOMAIN=yoursite.com`) to serve the documentation on that host only: the pages, the Markdown twins and the API routes answer 404 on every other host, and page links and search results point at that host whichever host builds them. A blank value counts as unset.
 
 ### Markdown for agents
 

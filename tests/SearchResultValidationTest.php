@@ -66,6 +66,15 @@ it('keeps an absolute url on the documentation subdomain', function () {
         ->toEqual([searchResultEntry(['url' => $url])]);
 });
 
+it('keeps an absolute url on the configured documentation domain', function () {
+    config()->set('lemme.domain', 'docs-host.example');
+
+    $url = 'https://docs-host.example/docs/installation';
+
+    expect(handledSearchResults([searchResultEntry(['url' => $url])]))
+        ->toEqual([searchResultEntry(['url' => $url])]);
+});
+
 it('rejects a javascript url', function () {
     // Blade escapes an href's text and leaves its scheme alone, so this is the
     // one the escaping in the view cannot answer.

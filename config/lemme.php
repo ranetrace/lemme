@@ -41,6 +41,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Domain
+    |--------------------------------------------------------------------------
+    |
+    | The one host the documentation answers on under the route prefix, such
+    | as 'yoursite.com'. Every other host gets a 404, so an application that
+    | serves several hosts does not publish a copy of its documentation on
+    | each. Leave as null to answer on every host. The subdomain layout names
+    | its host already and ignores this value.
+    |
+    */
+    'domain' => env('LEMME_DOMAIN', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Theme
     |--------------------------------------------------------------------------
     |

@@ -168,9 +168,10 @@ class SearchResultValidator
     /**
      * The hosts this installation serves documentation on.
      *
-     * Both hosts stay in the list because a documentation route lives on one or
-     * the other: the route-prefix layout serves the pages on the application's
-     * own host, the subdomain layout on `<subdomain>.<base host>`.
+     * Every host stays in the list because a documentation route lives on one
+     * of them: the route-prefix layout serves the pages on the application's
+     * own host, or on `lemme.domain` when one is set, and the subdomain layout
+     * on `<subdomain>.<base host>`.
      * `Lemme::getPageUrl()` builds the index through the named routes, so it
      * writes whichever host the configured layout actually serves, and this
      * list is what says that host is still this site.
@@ -185,6 +186,10 @@ class SearchResultValidator
     protected function documentationHosts(): array
     {
         $hosts = [Lemme::baseHost()];
+
+        if (($domain = Lemme::domain()) !== null) {
+            $hosts[] = $domain;
+        }
 
         $subdomain = config('lemme.subdomain');
 

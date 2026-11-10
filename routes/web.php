@@ -30,48 +30,31 @@ if ($subdomain && ! $routePrefix) {
                 });
             }
         });
-} elseif ($routePrefix) {
-    // Use route prefix
-    Route::prefix($routePrefix)
-        ->middleware(['web'])
-        ->group(function () {
-            Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
-
-            // Markdown twins (optional): /{slug}.md serves the raw Markdown source
-            if (config('lemme.markdown.enabled', true)) {
-                Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
-            }
-
-            Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
-
-            // API routes (optional)
-            if (config('lemme.api.enabled')) {
-                Route::prefix('api')->group(function () {
-                    Route::get('/', [DocsController::class, 'api'])->name('lemme.api');
-                    Route::get('/{slug}', [DocsController::class, 'apiPage'])->name('lemme.api.page')->where('slug', '[a-z0-9][a-z0-9\-/]*');
-                });
-            }
-        });
 } else {
-    // Default: use main domain with docs prefix
-    Route::prefix('docs')
-        ->middleware(['web'])
-        ->group(function () {
-            Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
+    // Route prefix, `docs` unless one is configured, on the configured domain
+    // or on every host when none is
+    $prefixedRoutes = Route::prefix($routePrefix ?: 'docs')->middleware(['web']);
 
-            // Markdown twins (optional): /{slug}.md serves the raw Markdown source
-            if (config('lemme.markdown.enabled', true)) {
-                Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
-            }
+    if (($domain = Lemme::domain()) !== null) {
+        $prefixedRoutes->domain($domain);
+    }
 
-            Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
+    $prefixedRoutes->group(function () {
+        Route::get('/', [DocsController::class, 'show'])->name('lemme.home');
 
-            // API routes (optional)
-            if (config('lemme.api.enabled')) {
-                Route::prefix('api')->group(function () {
-                    Route::get('/', [DocsController::class, 'api'])->name('lemme.api');
-                    Route::get('/{slug}', [DocsController::class, 'apiPage'])->name('lemme.api.page')->where('slug', '[a-z0-9][a-z0-9\-/]*');
-                });
-            }
-        });
+        // Markdown twins (optional): /{slug}.md serves the raw Markdown source
+        if (config('lemme.markdown.enabled', true)) {
+            Route::get('/{slug}.md', [DocsController::class, 'showMarkdown'])->name('lemme.page.markdown')->where('slug', '[a-z0-9][a-z0-9\-/]*');
+        }
+
+        Route::get('/{slug}', [DocsController::class, 'show'])->name('lemme.page')->where('slug', '(?!api(?:/|$))[a-z0-9][a-z0-9\-/]*');
+
+        // API routes (optional)
+        if (config('lemme.api.enabled')) {
+            Route::prefix('api')->group(function () {
+                Route::get('/', [DocsController::class, 'api'])->name('lemme.api');
+                Route::get('/{slug}', [DocsController::class, 'apiPage'])->name('lemme.api.page')->where('slug', '[a-z0-9][a-z0-9\-/]*');
+            });
+        }
+    });
 }
