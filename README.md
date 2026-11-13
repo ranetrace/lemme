@@ -225,8 +225,8 @@ return [
         // Directory-based grouping
         'grouping' => [
             'enabled' => true,
-            'sort_groups_by' => 'directory_name', // 'directory_name', 'title'
-            'sort_groups_direction' => 'asc',
+            // Groups are ordered by directory name, number prefix first, at every level
+            'sort_groups_direction' => 'asc', // 'asc', 'desc'
         ],
     ],
 
@@ -629,6 +629,8 @@ docs/
 - A group title is the directory name with its dashes and underscores turned into spaces and its first letter raised. The rest keeps the casing you wrote, so name the directory `2_API` for "API" and `3_PHP-SDK` for "PHP SDK"; `2_api` reads "Api". The same goes for the category a search result shows, and for the title of a page that sets none in its front matter
 - Both `snake_case` and `kebab-case` naming conventions are supported
 - Files and directories without numbers sort alphabetically after numbered ones
+
+Groups are ordered this way at every level. Set `navigation.grouping.sort_groups_direction` to `desc` to reverse the order, nested groups included.
 
 You can disable grouping in the configuration if you prefer a flat navigation structure.
 

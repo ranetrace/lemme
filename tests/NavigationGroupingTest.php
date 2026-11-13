@@ -80,3 +80,34 @@ it('keeps the casing a directory name was written in', function (string $directo
     'no number prefix' => ['guides', 'Guides'],
     'a multibyte first letter' => ['2_émissions', 'Émissions'],
 ]);
+
+it('reverses the groups at every level when the direction is descending', function () {
+    config()->set('lemme.navigation.grouping.sort_groups_direction', 'desc');
+
+    $pages = new Collection([
+        ['title' => 'A', 'slug' => 'alpha-a', 'relative_path' => '1_alpha/a.md'],
+        ['title' => 'A', 'slug' => 'beta-one-a', 'relative_path' => '2_beta/1_one/a.md'],
+        ['title' => 'A', 'slug' => 'beta-two-a', 'relative_path' => '2_beta/2_two/a.md'],
+    ]);
+
+    $groups = $this->builder->build($pages, fn ($slug) => '/docs/'.$slug)->where('type', 'group')->values();
+
+    expect($groups->pluck('title')->all())->toBe(['Beta', 'Alpha'])
+        ->and($groups[0]['children']->pluck('title')->all())->toBe(['Two', 'One']);
+});
+
+it('orders the groups by directory name whatever a published config still asks for', function () {
+    // `sort_groups_by` is gone. Its `title` value left the top-level groups in
+    // the order their pages were read, and a config published before the
+    // removal can still carry it.
+    config()->set('lemme.navigation.grouping.sort_groups_by', 'title');
+
+    $pages = new Collection([
+        ['title' => 'A', 'slug' => 'beta-a', 'relative_path' => '2_beta/a.md'],
+        ['title' => 'A', 'slug' => 'alpha-a', 'relative_path' => '1_alpha/a.md'],
+    ]);
+
+    $groups = $this->builder->build($pages, fn ($slug) => '/docs/'.$slug)->where('type', 'group');
+
+    expect($groups->pluck('title')->all())->toBe(['Alpha', 'Beta']);
+});

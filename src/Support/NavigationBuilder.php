@@ -102,17 +102,7 @@ class NavigationBuilder
             unset($grouped['_root']);
         }
 
-        $sortBy = config('lemme.navigation.grouping.sort_groups_by', 'directory_name');
-        $sortDirection = config('lemme.navigation.grouping.sort_groups_direction', 'asc');
-
-        $sortedGroups = collect($grouped);
-        if ($sortBy === 'directory_name') {
-            $sortedGroups = $sortedGroups->sortBy(function ($value, $key) {
-                return $this->getSortableDirectoryName($key);
-            }, SORT_REGULAR, $sortDirection === 'desc');
-        }
-
-        foreach ($sortedGroups as $groupName => $groupData) {
+        foreach ($this->sortGroups($grouped) as $groupName => $groupData) {
             $navigation->push($this->buildNavigationGroup($groupName, $groupData, $urlResolver));
         }
 
@@ -145,15 +135,29 @@ class NavigationBuilder
             unset($groupData['_pages']);
         }
 
-        $sortedNestedGroups = collect($groupData)->sortBy(function ($value, $key) {
-            return $this->getSortableDirectoryName($key);
-        });
-
-        foreach ($sortedNestedGroups as $nestedGroupName => $nestedGroupData) {
+        foreach ($this->sortGroups($groupData) as $nestedGroupName => $nestedGroupData) {
             $group['children']->push($this->buildNavigationGroup($nestedGroupName, $nestedGroupData, $urlResolver));
         }
 
         return $group;
+    }
+
+    /**
+     * Order the groups of one level by directory name, number prefix first, in
+     * the configured direction.
+     *
+     * @param  array<string, mixed>  $groups
+     * @return Collection<string, mixed>
+     */
+    protected function sortGroups(array $groups): Collection
+    {
+        $descending = strtolower((string) config('lemme.navigation.grouping.sort_groups_direction', 'asc')) === 'desc';
+
+        return collect($groups)->sortBy(
+            fn (array $group, string $directoryName): string => $this->getSortableDirectoryName($directoryName),
+            SORT_REGULAR,
+            $descending,
+        );
     }
 
     protected function getSortableDirectoryName(string $dirName): string

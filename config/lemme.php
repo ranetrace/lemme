@@ -118,8 +118,8 @@ return [
         // Directory-based grouping
         'grouping' => [
             'enabled' => true,
-            'sort_groups_by' => 'directory_name', // 'directory_name', 'title'
-            'sort_groups_direction' => 'asc',
+            // Groups are ordered by directory name, number prefix first, at every level
+            'sort_groups_direction' => 'asc', // 'asc', 'desc'
         ],
     ],
 
