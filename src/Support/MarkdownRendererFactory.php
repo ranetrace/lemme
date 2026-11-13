@@ -24,6 +24,28 @@ use Spatie\LaravelMarkdown\MarkdownRenderer as BaseMarkdownRenderer;
 class MarkdownRendererFactory
 {
     /**
+     * A table cannot scroll itself: one wider than the page widens the page. So
+     * every table sits in a container that scrolls sideways in its place.
+     *
+     * The container takes over the table's vertical margin, which would otherwise
+     * stop collapsing with the paragraphs around it (28px is the prose default for
+     * a table). It can take focus and is a named region, because a scroll area a
+     * keyboard cannot reach hides its far columns from anyone without a pointer.
+     *
+     * The classes are compiled into the shipped stylesheet from this file.
+     */
+    protected const array TABLE_SCROLL_CONTAINER = [
+        'enabled' => true,
+        'tag' => 'div',
+        'attributes' => [
+            'class' => 'my-7 overflow-x-auto [&>table]:my-0',
+            'tabindex' => '0',
+            'role' => 'region',
+            'aria-label' => 'Table',
+        ],
+    ];
+
+    /**
      * Build the renderer named by `lemme.markdown.renderer`.
      *
      * Naming the class is what lets a host application render documentation the
@@ -48,7 +70,7 @@ class MarkdownRendererFactory
         }
 
         $renderer = new $rendererClass(
-            commonmarkOptions: (array) config('lemme.markdown.commonmark_options', []),
+            commonmarkOptions: $this->commonmarkOptions(),
             highlightTheme: config('lemme.markdown.highlight_theme', 'github-light'),
             cacheStoreName: false,
             renderAnchors: false,
@@ -59,5 +81,24 @@ class MarkdownRendererFactory
         }
 
         return $renderer;
+    }
+
+    /**
+     * The configured CommonMark options, with the table scroll container added.
+     *
+     * The container is set here and not in the package's config file because an
+     * application that published the config, or restates the `markdown` block,
+     * would never receive a new default from it. A `table.wrap` the application
+     * sets itself is kept whole.
+     *
+     * @return array<string, mixed>
+     */
+    protected function commonmarkOptions(): array
+    {
+        $options = (array) config('lemme.markdown.commonmark_options', []);
+
+        $options['table']['wrap'] ??= self::TABLE_SCROLL_CONTAINER;
+
+        return $options;
     }
 }

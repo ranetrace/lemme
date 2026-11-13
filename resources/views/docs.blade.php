@@ -210,9 +210,16 @@
 
     <!-- Main Content -->
     {{-- The landmark the skip link jumps to, and the one region of the page that changes
-         from page to page. --}}
-    <main id="main-content" class="mx-auto w-full max-w-2xl lg:max-w-3xl">
-        <div class="px-4 pt-10 pb-24 sm:px-6 xl:pr-0 prose dark:prose-invert">
+         from page to page.
+
+         `min-w-0` lets this grid item be narrower than its content. Without it the
+         longest line of a code block sets the width of the column, and with it of the
+         whole page on a phone, so the block's own horizontal scroll never comes into play. --}}
+    <main id="main-content" class="mx-auto w-full min-w-0 max-w-2xl lg:max-w-3xl">
+        {{-- `wrap-break-word` breaks a word that is longer than the line, such as an
+             environment variable or a url in inline code, which would otherwise run
+             past the edge of a phone screen and widen the page. --}}
+        <div class="px-4 pt-10 pb-24 sm:px-6 xl:pr-0 prose dark:prose-invert wrap-break-word">
             {!! $html !!}
         </div>
     </main>
