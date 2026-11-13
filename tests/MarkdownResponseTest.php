@@ -115,3 +115,24 @@ it('ignores accept text/markdown when markdown feature is disabled', function ()
     $response->assertOk();
     expect($response->headers->get('Content-Type'))->toStartWith('text/html');
 });
+
+it('tells a cache that a page url answers differently per Accept header', function (array $headers) {
+    $this->docs->file('page.md', "---\ntitle: Page\n---\n# Page\n");
+
+    $response = $this->get('/docs/page', $headers)->assertOk();
+
+    expect($response->headers->get('Vary'))->toContain('Accept');
+})->with([
+    'the html page' => [[]],
+    'the markdown answer' => [['Accept' => 'text/markdown']],
+]);
+
+it('leaves the Vary header alone where the answer does not depend on Accept', function () {
+    $this->docs->file('page.md', "---\ntitle: Page\n---\n# Page\n");
+
+    expect($this->get('/docs/page.md')->assertOk()->headers->get('Vary'))->toBeNull();
+
+    config()->set('lemme.markdown.enabled', false);
+
+    expect($this->get('/docs/page')->assertOk()->headers->get('Vary'))->toBeNull();
+});

@@ -2,7 +2,6 @@
 
 namespace Ranetrace\Lemme\Http\Controllers;
 
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,7 +15,7 @@ class DocsController extends Controller
     /**
      * Display the documentation homepage or a specific page
      */
-    public function show(Request $request, string $slug = ''): View|Response
+    public function show(Request $request, string $slug = ''): Response
     {
         if (empty($slug)) {
             $page = $this->resolveHomePage();
@@ -31,7 +30,7 @@ class DocsController extends Controller
         }
 
         if ($this->wantsMarkdown($request)) {
-            return $this->markdownResponse($page);
+            return $this->variesByAccept($this->markdownResponse($page));
         }
 
         $navigation = Lemme::getNavigation();
@@ -41,7 +40,7 @@ class DocsController extends Controller
         $ua = (string) $request->header('User-Agent', '');
         $isMac = (bool) preg_match('/Mac|iPhone|iPad|iPod/i', $ua);
 
-        return view('lemme::docs', [
+        return $this->variesByAccept(response()->view('lemme::docs', [
             'page' => $page,
             'html' => $html,
             'navigation' => $navigation,
@@ -51,7 +50,7 @@ class DocsController extends Controller
             'theme' => config('lemme.theme', 'default'),
             'accentColor' => AccentColor::fromConfig(),
             'isMac' => $isMac,
-        ]);
+        ]));
     }
 
     /**
@@ -123,6 +122,20 @@ class DocsController extends Controller
         }
 
         return str_contains((string) $request->header('Accept', ''), 'text/markdown');
+    }
+
+    /**
+     * A page url answers with html or with Markdown depending on the Accept
+     * header, so a cache that keeps one answer must not hand it to a client
+     * that asked for the other.
+     */
+    protected function variesByAccept(Response $response): Response
+    {
+        if (config('lemme.markdown.enabled', true)) {
+            $response->setVary('Accept', false);
+        }
+
+        return $response;
     }
 
     /**
