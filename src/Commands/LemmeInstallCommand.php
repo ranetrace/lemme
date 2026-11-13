@@ -41,22 +41,9 @@ class LemmeInstallCommand extends Command
             $this->info('Cleared documentation cache');
         }
 
-        // Determine the correct URL based on configuration
-        $subdomain = config('lemme.subdomain');
-        $routePrefix = config('lemme.route_prefix');
-
-        if ($subdomain && ! $routePrefix) {
-            // Using subdomain routing with consistent domain calculation
-            $protocol = \Ranetrace\Lemme\Lemme::baseScheme();
-            $host = \Ranetrace\Lemme\Lemme::baseHost();
-            $lemmeDomain = $protocol.'://'.$subdomain.'.'.$host;
-        } elseif ($routePrefix) {
-            // Using route prefix (default)
-            $lemmeDomain = url($routePrefix);
-        } else {
-            // Fallback to default docs prefix
-            $lemmeDomain = url('docs');
-        }
+        // The home route carries the host and the prefix of whichever layout is
+        // configured, the domain setting included.
+        $lemmeDomain = Lemme::getPageUrl('');
 
         $this->newLine();
         $this->info('✅ Lemme documentation system installed successfully!');
