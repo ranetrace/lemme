@@ -77,6 +77,28 @@
     }
 }
 
+/* Inline code is marked by a quiet chip. The typography plugin marks it with a
+   literal backtick on each side, which reads as Markdown that was never
+   rendered. Code inside a block is left alone: a `pre` is its own surface.
+
+   Both rules are unlayered, so they win from the plugin's rules in Tailwind's
+   utilities layer whatever their order in the build. */
+.prose :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *)) {
+    @apply rounded-md bg-zinc-900/6 px-[0.3em] py-[0.1em] font-medium box-decoration-clone dark:bg-white/10;
+}
+
+.prose :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *))::after {
+    content: none;
+}
+
+/* A heading, a table header and bold text set their own weight, and code inside
+   them keeps it: the chip's medium weight would read lighter than the words
+   around it. */
+.prose :where(h1, h2, h3, h4, th, strong) :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *)) {
+    font-weight: inherit;
+}
+
 html.dark .shiki,
 html.dark .shiki span {
     color: var(--shiki-dark) !important;
