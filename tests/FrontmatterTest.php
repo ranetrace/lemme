@@ -11,7 +11,7 @@ it('falls back to filename for title and slug when frontmatter missing', functio
     $docs->file('installation_guide.md', "# Installation Guide\n");
 
     $page = Lemme::getPages()->first();
-    expect($page['title'])->toBe('Installation Guide')
+    expect($page['title'])->toBe('Installation guide')
         ->and($page['slug'])->toBe('installation-guide');
 });
 

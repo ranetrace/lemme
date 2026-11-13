@@ -23,7 +23,7 @@ Your directory structure becomes your navigation:
 ```
 docs/
 ├── index.md              → "Home" 
-├── 1_getting-started/    → "Getting Started" (group)
+├── 1_getting-started/    → "Getting started" (group)
 │   ├── 1_installation.md
 │   └── 2_setup.md
 ├── 2_guides/             → "Guides" (group)

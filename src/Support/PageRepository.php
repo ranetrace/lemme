@@ -153,10 +153,7 @@ class PageRepository
 
     protected function generateTitleFromPath(string $path): string
     {
-        $filename = pathinfo($path, PATHINFO_FILENAME);
-        $cleaned = $this->removeNumberPrefix($filename);
-
-        return ucwords(str_replace(['-', '_'], ' ', $cleaned));
+        return PathLabel::for(pathinfo($path, PATHINFO_FILENAME));
     }
 
     protected function getSortCallback(): callable

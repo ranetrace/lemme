@@ -610,10 +610,10 @@ Lemme automatically organizes your navigation based on your directory structure.
 ```
 docs/
 ├── index.md                    # Ungrouped: "Home"  
-├── 1_getting-started/          # Group: "Getting Started" (sorted first)
+├── 1_getting-started/          # Group: "Getting started" (sorted first)
 │   ├── 1_installation.md       #   ├─ Installation
 │   └── 2_configuration.md      #   └─ Configuration
-└── 2_api/                      # Group: "API" (sorted second)
+└── 2_API/                      # Group: "API" (sorted second)
     ├── 1_authentication.md     #   ├─ Authentication
     ├── 2_endpoints.md          #   ├─ Endpoints  
     └── 3_advanced/             #   └─ Advanced (sub-group)
@@ -624,6 +624,7 @@ docs/
 **Number Prefixes for Sorting:**
 - Use `1_`, `2_`, `10_` or `1-`, `2-`, `10-` prefixes for precise ordering
 - Number prefixes are automatically removed from navigation titles
+- A group title is the directory name with its dashes and underscores turned into spaces and its first letter raised. The rest keeps the casing you wrote, so name the directory `2_API` for "API" and `3_PHP-SDK` for "PHP SDK"; `2_api` reads "Api". The same goes for the category a search result shows, and for the title of a page that sets none in its front matter
 - Both `snake_case` and `kebab-case` naming conventions are supported
 - Files and directories without numbers sort alphabetically after numbered ones
 

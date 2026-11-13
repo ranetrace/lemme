@@ -24,10 +24,10 @@ it('builds hierarchical navigation with groups', function () {
     expect($nav[0]['type'])->toBe('page')
         ->and($nav[0]['title'])->toBe('Home');
 
-    // Expect two groups (Getting Started, Api)
+    // Expect two groups (Getting started, Api)
     $groups = $nav->filter(fn ($i) => $i['type'] === 'group')->values();
     expect($groups)->toHaveCount(2)
-        ->and($groups[0]['title'])->toBe('Getting Started')
+        ->and($groups[0]['title'])->toBe('Getting started')
         ->and($groups[0]['children'])->toHaveCount(2)
         ->and($groups[1]['title'])->toBe('Api')
         ->and($groups[1]['children']->first()['title'])->toBe('Authentication');
@@ -48,7 +48,7 @@ it('removes number prefixes in group title formatting (implicit)', function () {
         ['title' => 'Intro', 'slug' => 'advanced-intro', 'relative_path' => '001_advanced-topics/intro.md'],
     ]);
     $nav = $this->builder->build($pages, fn ($slug) => '/x/'.$slug);
-    expect($nav->firstWhere('type', 'group')['title'])->toBe('Advanced Topics');
+    expect($nav->firstWhere('type', 'group')['title'])->toBe('Advanced topics');
 });
 
 it('sorts groups respecting numeric prefixes (implicit order)', function () {
@@ -61,3 +61,22 @@ it('sorts groups respecting numeric prefixes (implicit order)', function () {
     $groups = $nav->filter(fn ($i) => $i['type'] === 'group')->values();
     expect($groups->map(fn ($g) => $g['title'])->all())->toBe(['Alpha', 'Beta', 'Misc']);
 });
+
+it('keeps the casing a directory name was written in', function (string $directory, string $title) {
+    // The directory name is the only place a writer can spell the label, so an
+    // acronym written in capitals has to arrive in capitals.
+    $pages = new Collection([
+        ['title' => 'Intro', 'slug' => 'intro', 'relative_path' => $directory.'/intro.md'],
+    ]);
+
+    $nav = $this->builder->build($pages, fn ($slug) => '/docs/'.$slug);
+
+    expect($nav->firstWhere('type', 'group')['title'])->toBe($title);
+})->with([
+    'an acronym' => ['3_PHP-SDK', 'PHP SDK'],
+    'an acronym before a word' => ['4_AI-agents', 'AI agents'],
+    'a capital inside a word' => ['5_JavaScript_errors', 'JavaScript errors'],
+    'lower case' => ['1_getting-started', 'Getting started'],
+    'no number prefix' => ['guides', 'Guides'],
+    'a multibyte first letter' => ['2_émissions', 'Émissions'],
+]);

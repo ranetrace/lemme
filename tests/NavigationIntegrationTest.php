@@ -22,7 +22,7 @@ it('builds navigation tree with groups and pages', function () {
 
     $groups = $nav->slice(1)->values();
     expect($groups[0]['type'])->toBe('group')
-        ->and($groups[0]['title'])->toBe('Getting Started')
+        ->and($groups[0]['title'])->toBe('Getting started')
         ->and($groups[0]['children'])->toHaveCount(2);
 
     expect($groups[1]['title'])->toBe('Api')

@@ -69,11 +69,7 @@ class SearchIndexBuilder
     {
         $pathParts = explode('/', $path);
         if (count($pathParts) > 1) {
-            $directory = $pathParts[0];
-            $cleaned = $this->removeNumberPrefix($directory);
-            $formatted = str_replace(['-', '_'], ' ', $cleaned);
-
-            return ucwords(strtolower($formatted));
+            return PathLabel::for($pathParts[0]);
         }
 
         return 'General';
@@ -150,10 +146,5 @@ class SearchIndexBuilder
         $collapsed = preg_replace('/[\s\x{00A0}]+/u', ' ', $text);
 
         return trim($collapsed ?? $text);
-    }
-
-    protected function removeNumberPrefix(string $name): string
-    {
-        return (string) preg_replace('/^\d+[-_]/', '', $name);
     }
 }

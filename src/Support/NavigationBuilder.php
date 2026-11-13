@@ -123,7 +123,7 @@ class NavigationBuilder
     {
         $group = [
             'type' => 'group',
-            'title' => $this->formatGroupTitle($groupName),
+            'title' => PathLabel::for($groupName),
             'slug' => $groupName,
             'children' => collect(),
         ];
@@ -156,22 +156,9 @@ class NavigationBuilder
         return $group;
     }
 
-    protected function formatGroupTitle(string $dirName): string
-    {
-        $cleaned = $this->removeNumberPrefix($dirName);
-        $formatted = str_replace(['-', '_'], ' ', $cleaned);
-
-        return ucwords(strtolower($formatted));
-    }
-
     protected function getSortableDirectoryName(string $dirName): string
     {
         return $this->prefixSortableName($dirName);
-    }
-
-    protected function removeNumberPrefix(string $name): string
-    {
-        return (string) preg_replace('/^\d+[-_]/', '', $name);
     }
 
     protected function prefixSortableName(string $name): string

@@ -212,3 +212,23 @@ MD);
         $docs->cleanup();
     }
 });
+
+it('labels a search entry with the group its page is listed under', function () {
+    // The search result prints this label and the sidebar prints the group
+    // title: one directory, so one spelling.
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    config()->set('lemme.cache.enabled', false);
+
+    $docs->file('3_PHP-SDK/1_installation.md', "---\ntitle: Installation\n---\n# Installation\n");
+    $docs->file('root.md', "---\ntitle: Root\n---\n# Root\n");
+
+    $data = collect(Lemme::getSearchData());
+    $group = Lemme::getNavigation()->firstWhere('type', 'group');
+
+    expect($data->firstWhere('slug', 'installation')['category'])->toBe('PHP SDK')
+        ->and($group['title'])->toBe('PHP SDK')
+        ->and($data->firstWhere('slug', 'root')['category'])->toBe('General');
+
+    $docs->cleanup();
+});
