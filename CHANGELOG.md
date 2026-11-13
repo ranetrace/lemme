@@ -2,7 +2,7 @@
 
 All notable changes to `ranetrace/lemme` will be documented in this file.
 
-## Unreleased
+## v3.3.0 - 2026-11-13
 
 ### Added
 - Every documentation page names its own URL in a `<link rel="canonical">` tag. The URL is built through the named routes, like the navigation links: with `lemme.domain` set, or on the subdomain layout, it is on the one host the documentation answers on, and without it on the host the request came in on. A query string is left out, and when the docs root shows the first page for want of an `index.md`, the canonical URL is that page's own. An application without `lemme.domain` that answers on several hosts still serves a copy per host, each naming itself: set the domain to have one. A published copy of the `docs` view does not get the tag until it is published again or the line is added by hand (`<link rel="canonical" href="{{ $canonicalUrl }}">`).
