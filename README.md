@@ -654,6 +654,15 @@ Every page is also available as raw Markdown, so agents and tools can read your 
 
 Both return the Markdown source with the frontmatter stripped, `Content-Type: text/markdown; charset=utf-8`, and an `X-Markdown-Tokens` header estimating the token count so callers can budget their context window.
 
+A `.md` URL is served without a session: it starts none and sets no cookie, since an agent or a crawler has no use for either. The route stays in the `web` middleware group and leaves out its session, cookie and CSRF middleware, so a middleware your application added to that group still runs on it and finds no session there (`$request->hasSession()` is `false`). The `Accept: text/markdown` form shares the page's route and keeps the session.
+
+Lemme sets no cache lifetime on a twin. To let a browser or a CDN keep one, add Laravel's `cache.headers` middleware to the route by its name, after the package's routes are registered, for example at the end of `routes/web.php`:
+
+```php
+Route::getRoutes()->getByName('lemme.page.markdown')
+    ?->middleware('cache.headers:public;max_age=3600;etag');
+```
+
 | Page | HTML URL | Markdown URL |
 |------|----------|--------------|
 | Home (`docs/index.md`) | `/docs` | `/docs/index.md` |
@@ -693,6 +702,8 @@ Or set `config(['lemme.api.enabled' => true])` at runtime (e.g. inside a feature
 | Subdomain (`docs.`) | `https://docs.yoursite.com/api` | `https://docs.yoursite.com/api/{slug}` |
 
 If disabled, hitting the endpoints returns 404 and named routes `lemme.api` / `lemme.api.page` are not registered.
+
+Like the Markdown twins, the endpoints are served without a session and set no cookie.
 
 **Example use cases when enabled:**
 - Build custom documentation frontends

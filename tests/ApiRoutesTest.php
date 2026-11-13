@@ -91,3 +91,16 @@ it('treats /docs/api as api index not page route', function () {
     $response = $this->get('/docs/api');
     $response->assertOk()->assertJsonStructure(['pages', 'navigation']);
 });
+
+it('serves the api without starting a session or setting a cookie', function (string $route, array $parameters) {
+    $docs = DocsFactory::make();
+    config()->set('lemme.docs_directory', $docs->relativePath());
+    $docs->file('reference.md', "# Reference\n");
+
+    $response = $this->get(route($route, $parameters))->assertOk();
+
+    expect($response->headers->getCookies())->toBeEmpty();
+})->with([
+    'the index' => ['lemme.api', []],
+    'a page' => ['lemme.api.page', ['slug' => 'reference']],
+]);
