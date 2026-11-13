@@ -99,6 +99,15 @@
     font-weight: inherit;
 }
 
+/* A code block is framed by a hairline in the zinc the layout's own rings use.
+   Its background is the highlight theme's, and most light themes are white on
+   this white page: without the frame nothing marks where a block starts and
+   ends, or where a line that scrolls sideways is cut. The ring lies outside the
+   block, so scrolled code never runs over it. Unlayered, like the rules above. */
+.prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply ring-1 ring-zinc-900/10 dark:ring-white/10;
+}
+
 html.dark .shiki,
 html.dark .shiki span {
     color: var(--shiki-dark) !important;
