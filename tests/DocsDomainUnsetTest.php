@@ -27,3 +27,16 @@ it('reads a blank domain as no domain', function (?string $domain) {
 
     expect(Lemme::domain())->toBeNull();
 })->with([null, '', '   ']);
+
+it('names the request host as the canonical url while no domain is set', function (string $host) {
+    $this->get("http://{$host}/docs/getting-started")
+        ->assertSee('<link rel="canonical" href="http://'.$host.'/docs/getting-started">', false);
+})->with(['example.com', 'app.example.com']);
+
+it('names the page itself as canonical when the docs root shows it for want of an index page', function () {
+    // Without an `index.md` the docs root shows the first page, which then
+    // answers on two urls.
+    $this->get('http://example.com/docs')
+        ->assertOk()
+        ->assertSee('<link rel="canonical" href="http://example.com/docs/getting-started">', false);
+});

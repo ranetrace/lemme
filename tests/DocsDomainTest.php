@@ -40,3 +40,13 @@ it('links pages on the configured domain from any host', function () {
     expect(Lemme::getPageUrl('getting-started'))->toBe('http://example.com/docs/getting-started')
         ->and(Lemme::getPageUrl(''))->toBe('http://example.com/docs');
 });
+
+it('names the configured domain as the canonical url of a page', function (string $path, string $canonical) {
+    $this->get("http://example.com{$path}")
+        ->assertOk()
+        ->assertSee('<link rel="canonical" href="'.$canonical.'">', false);
+})->with([
+    'the home page' => ['/docs', 'http://example.com/docs'],
+    'a page' => ['/docs/getting-started', 'http://example.com/docs/getting-started'],
+    'a page with a query string' => ['/docs/getting-started?ref=nav', 'http://example.com/docs/getting-started'],
+]);

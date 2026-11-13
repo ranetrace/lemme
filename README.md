@@ -643,6 +643,8 @@ Precedence: If both `subdomain` and `route_prefix` are set, the route prefix win
 
 On an application that answers on more than one host (a public site, an app host, an API host), every host serves the route prefix, so each would publish a full copy of the documentation. Set `domain` (`LEMME_DOMAIN=yoursite.com`) to serve the documentation on that host only: the pages, the Markdown twins and the API routes answer 404 on every other host, and page links and search results point at that host whichever host builds them. A blank value counts as unset.
 
+Every page names its own URL in a `<link rel="canonical">` tag, without the query string. With `domain` set, or on the subdomain layout, that URL is on the one host the documentation answers on. Without it the URL is on the host the request came in on, so each host still names itself: set `domain` when the same documentation should not be read as several copies.
+
 ### Markdown for agents
 
 Every page is also available as raw Markdown, so agents and tools can read your documentation without parsing HTML. There are two ways to ask for it:

@@ -45,6 +45,7 @@ class DocsController extends Controller
             'page' => $page,
             'html' => $html,
             'navigation' => $navigation,
+            'canonicalUrl' => Lemme::getPageUrl($slug),
             'siteTitle' => config('lemme.site_title', 'Documentation'),
             'siteDescription' => config('lemme.site_description', 'Project Documentation'),
             'theme' => config('lemme.theme', 'default'),

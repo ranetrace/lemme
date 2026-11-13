@@ -6,6 +6,8 @@
     <title>{{ $page['title'] }} - {{ $siteTitle }}</title>
     <meta name="description" content="{{ $siteDescription }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- The page's own url, on the one host the documentation is pinned to when `lemme.domain` is set. --}}
+    <link rel="canonical" href="{{ $canonicalUrl }}">
 @if(config('lemme.markdown.enabled', true))
     {{-- The Markdown twin of this page. The home page's slug is empty, so it is served at index.md. --}}
     <link rel="alternate" type="text/markdown" href="{{ route('lemme.page.markdown', ['slug' => $page['slug'] === '' ? 'index' : $page['slug']]) }}">

@@ -4,6 +4,9 @@ All notable changes to `ranetrace/lemme` will be documented in this file.
 
 ## Unreleased
 
+### Added
+- Every documentation page names its own URL in a `<link rel="canonical">` tag. The URL is built through the named routes, like the navigation links: with `lemme.domain` set, or on the subdomain layout, it is on the one host the documentation answers on, and without it on the host the request came in on. A query string is left out, and when the docs root shows the first page for want of an `index.md`, the canonical URL is that page's own. An application without `lemme.domain` that answers on several hosts still serves a copy per host, each naming itself: set the domain to have one. A published copy of the `docs` view does not get the tag until it is published again or the line is added by hand (`<link rel="canonical" href="{{ $canonicalUrl }}">`).
+
 ### Changed
 - A code block has a hairline frame in both themes. Its background comes from the highlight theme, and with a light theme that is white on the white page: nothing marked where a block starts and ends, and a line that scrolls sideways was cut at an edge the reader could not see. Every block now carries a 1px ring in the zinc the search field already uses (`zinc-900/10`, and `white/10` in the dark theme). The token colours and the block's background are unchanged. The change is in the stylesheet: publish the assets again after upgrading (`php artisan vendor:publish --tag=lemme-assets --force`).
 - Lemme requires Laravel 12 or 13. Laravel 11 is no longer supported: it stopped receiving security fixes on 12 March 2026, and Composer now refuses to install any Laravel 11 release because of the advisories left open on it, so Lemme can no longer be tested there. An application on Laravel 11 stays on v3.2.0, which Composer picks by itself. The README names the supported PHP and Laravel versions under "Installation".
