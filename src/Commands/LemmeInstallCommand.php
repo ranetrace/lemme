@@ -16,11 +16,12 @@ class LemmeInstallCommand extends Command
     {
         $this->info('Installing Lemme documentation system...');
 
-        $docsDirectory = base_path('docs');
+        $docsDirectoryName = trim((string) config('lemme.docs_directory', 'docs'), '/');
+        $docsDirectory = base_path($docsDirectoryName);
 
         if (! File::exists($docsDirectory)) {
             File::makeDirectory($docsDirectory, 0755, true);
-            $this->info('Created docs directory');
+            $this->info("Created directory: {$docsDirectoryName}/");
         } else {
             $this->info("Directory already exists: {$docsDirectory}");
         }
@@ -47,13 +48,13 @@ class LemmeInstallCommand extends Command
 
         $this->newLine();
         $this->info('✅ Lemme documentation system installed successfully!');
-        $this->info('📚 Your docs are located in: docs/');
+        $this->info("📚 Your docs are located in: {$docsDirectoryName}/");
         $this->info('🌐 Your documentation will be served at: '.$lemmeDomain);
 
         $this->newLine();
         $this->line('Next steps:');
         $this->line('1. Access the sample documentation at: '.$lemmeDomain.' to see how it works');
-        $this->line('2. Add your markdown file based documentation to the docs/ directory in your Laravel project');
+        $this->line("2. Add your markdown file based documentation to the {$docsDirectoryName}/ directory in your Laravel project");
         $this->line('3. Optionally configure subdomain routing in config/lemme.php if you prefer docs.yoursite.com');
 
         $this->newLine();

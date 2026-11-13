@@ -18,3 +18,20 @@ it('names the configured domain as the place the documentation is served', funct
         ->doesntExpectOutputToContain('app.example.com')
         ->assertSuccessful();
 });
+
+it('writes the sample files to the configured documentation directory', function () {
+    $directory = 'tests/runtime/handbook_'.bin2hex(random_bytes(6));
+    config()->set('lemme.docs_directory', $directory);
+
+    try {
+        $this->artisan('lemme:install')
+            ->expectsOutputToContain("Your docs are located in: {$directory}/")
+            ->assertSuccessful();
+
+        expect(base_path($directory.'/index.md'))->toBeFile()
+            ->and(base_path($directory.'/1_welcome/1_getting-started.md'))->toBeFile()
+            ->and(base_path('docs'))->not->toBeDirectory();
+    } finally {
+        File::deleteDirectory(base_path($directory));
+    }
+});

@@ -14,6 +14,7 @@ All notable changes to `ranetrace/lemme` will be documented in this file.
 - Lemme requires Laravel 12 or 13. Laravel 11 is no longer supported: it stopped receiving security fixes on 12 March 2026, and Composer now refuses to install any Laravel 11 release because of the advisories left open on it, so Lemme can no longer be tested there. An application on Laravel 11 stays on v3.2.0, which Composer picks by itself. The README names the supported PHP and Laravel versions under "Installation".
 
 ### Fixed
+- `lemme:install` writes the sample files to the configured documentation directory. It always wrote them to `docs/`, whatever `lemme.docs_directory` said, so on a site with another directory the samples landed where Lemme does not read and the site stayed empty. The directory it names in its output follows the setting too.
 - `lemme:install` names the host the documentation answers on. It built the address with `url()` on the application host, so with `lemme.domain` set it sent the reader to a host where the documentation is a 404. The address now comes from the home route, which carries the host and the prefix of whichever layout is configured.
 
 ## v3.2.0 - 2026-11-13
