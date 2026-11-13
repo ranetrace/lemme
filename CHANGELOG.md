@@ -2,7 +2,7 @@
 
 All notable changes to `ranetrace/lemme` will be documented in this file.
 
-## Unreleased
+## v3.2.0 - 2026-11-13
 
 ### Added
 - New `lemme.domain` config key (`LEMME_DOMAIN`) naming the one host the documentation answers on under the route prefix. An application that answers on several hosts served a full copy of its documentation on each, which search engines read as duplicates. With a domain set, the pages, the Markdown twins and the API routes answer 404 on every other host, and page links and search results are built on that host. Left at `null`, the default, or blank, the documentation answers on every host as before. The subdomain layout already names its host and ignores the key. Documented under "Accessing Documentation" in the README.
