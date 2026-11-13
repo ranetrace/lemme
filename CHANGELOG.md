@@ -2,6 +2,11 @@
 
 All notable changes to `ranetrace/lemme` will be documented in this file.
 
+## Unreleased
+
+### Changed
+- Lemme requires Laravel 12 or 13. Laravel 11 is no longer supported: it stopped receiving security fixes on 12 March 2026, and Composer now refuses to install any Laravel 11 release because of the advisories left open on it, so Lemme can no longer be tested there. An application on Laravel 11 stays on v3.2.0, which Composer picks by itself. The README names the supported PHP and Laravel versions under "Installation".
+
 ## v3.2.0 - 2026-11-13
 
 ### Added
