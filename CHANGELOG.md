@@ -2,6 +2,11 @@
 
 All notable changes to `ranetrace/lemme` will be documented in this file.
 
+## Unreleased
+
+### Added
+- PHP 8.6 is supported on Laravel 13, and the test suite runs there. Laravel 12 never received the PHP 8.6 fixes, so on Laravel 12 stay on PHP 8.5 or older.
+
 ## v3.3.0 - 2026-11-13
 
 ### Added

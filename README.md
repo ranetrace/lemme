@@ -73,7 +73,7 @@ It's really that simple. And totally free.
 
 ## Installation
 
-Lemme requires PHP 8.4 or newer and Laravel 12 or 13.
+Lemme requires PHP 8.4 or newer and Laravel 12 or 13. On PHP 8.6 it needs Laravel 13: Laravel 12 never received the PHP 8.6 fixes.
 
 Install the package via Composer:
 
